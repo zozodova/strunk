@@ -1082,8 +1082,7 @@ async function attack(effect, card) {
     play(sounds.attack2);
     }
   await wait(200);
-    const c = activeEnemy.stateList.filter(s => {s.type == "chargeDebuff"})
-    c.forEach(s => {if(s.trigger == "attack") activeEnemy })
+    activeEnemy.stateList = activeEnemy.stateList.filter(s => {s.type != "chargeDebuff" || s.trigger != "attack"})
     update();
     characterUpdate();
   }
@@ -1325,6 +1324,7 @@ function enemyAttack(enemy, value){
     log(enemy.name + " dealt "+ (value - gainedBlock) + " damage");
     gainedBlock = 0;
     }
+    tateList = stateList.filter(s => {s.type != "chargeDebuff" || s.trigger != "attack"})
   }
   else{
     log(`${enemy.name}'s attack missed`);
