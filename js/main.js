@@ -152,7 +152,7 @@ let Moh;
 
 let usedSkill;
 for (let i = 0; i < 20; i++){
-  deck.push(random(skills));
+  deck.push(random(skills, 1));
 }
 
 const buttons = document.querySelectorAll(".directionButton");
@@ -1003,7 +1003,19 @@ function useSkill(card) {
     if(!isCombat) return;
     switch(type){
       case("attack"):
-        attack(effect, card)
+        if(effect.target == "all"){
+          const defActiveEnemy = activeEnemy;
+          for(let enemy of cEnemy.content)
+            {
+              activeEnemy = enemy;
+              attack(effect, card);
+            }
+            activeEnemy = defActiveEnemy;
+        }
+        else{
+          attack(effect, card)
+        }
+
       break;
       case("block"):
         block(effect, card);

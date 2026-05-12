@@ -80,7 +80,7 @@ export const skills = [
   },
 
   {
-    Tier: 2,
+    Tier: 3,
     effects:[
     {type:"block", mag: 60},
     {type:"buff", name: "Mana", value:1, TRN: 2}
@@ -93,7 +93,7 @@ export const skills = [
   },
   
   {
-    Tier: 1,
+    Tier: 2,
     effects:[
     {type:"attack", mag: 60, CHN: 2,},
     ],
@@ -104,7 +104,7 @@ export const skills = [
     PROB: 30
   },
   {
-    Tier: 2,
+    Tier: 3,
     effects:[
     {type:"draw", value: 2},
     ],
@@ -139,7 +139,7 @@ export const skills = [
   },
 
   {
-    Tier: 1,
+    Tier: 3,
     effects:[
     {type:"buff", name: "Ignite",value: 50, TRN: 1}
     ],
@@ -161,7 +161,7 @@ export const skills = [
     PROB: 30
   },
   {
-    Tier: 1,
+    Tier: 3,
     effects:[
     {type:"buff", name: "Glaciate",value: 50, TRN: 1}
     ],
@@ -183,7 +183,7 @@ export const skills = [
     PROB: 30
   },
   {
-    Tier: 1,
+    Tier: 3,
     effects:[
     {type:"buff", name: "Overload",value: 50, TRN: 1}
     ],
@@ -205,7 +205,7 @@ export const skills = [
     PROB: 30
   },
    {
-    Tier: 1,
+    Tier: 3,
     effects:[
     {type:"buff", name: "Corrode",value: 50, TRN: 1}
     ],
@@ -227,7 +227,7 @@ export const skills = [
     PROB: 30
   },
   {
-    Tier: 2,
+    Tier: 3,
     name: "Bulwark Attack",
     description: "Deal 70% weapon damage. \n Gain 60% armor block.",
     effects:[
@@ -250,12 +250,23 @@ export const skills = [
     PROB: 15
   },
   {
-    Tier: 3,
+    Tier: 4,
     name: "Iron Stance",
     description: "ATK, DEF + 30%. \n 2 Turn",
     effects:[
     {type:"buff", name: "Strength",value: 30, TRN: 2},
     {type:"buff", name: "Fortify",value: 30, TRN: 2}
+    ],
+    AP: 1,
+    CST: 200,
+    PROB: 15
+  },
+  {
+    Tier: 1,
+    name: "Ruin",
+    description: "Deal 70% weapon damage to all enemies.",
+    effects:[
+    {type:"attack", mag: 70, target: "all"},
     ],
     AP: 1,
     CST: 200,
