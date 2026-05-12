@@ -315,7 +315,7 @@ function update() {
 
   for(let state of stateList){
     const stateUIChild = document.createElement("div");
-    stateUIChild.innerHTML = `${state.value??""}${state.sign}<sup>${state.TRN == Infinity ? state.TRN : ""}</sup>`;
+    stateUIChild.innerHTML = `${state.value??""}${state.sign}<sup>${state.TRN != Infinity ? state.TRN : ""}</sup>`;
     stateUIChild.classList.add("statusInfo");
     stateUIChild.addEventListener("mouseover", function(event){
       showTooltip(
@@ -330,7 +330,8 @@ function update() {
     stateUIChild.addEventListener("mouseout", function(){
       hideTooltip();
     })
-    if(state.type == "buff"){buffList.appendChild(stateUIChild);}
+    if(
+  state.type == "buff" || state.type == "chargeBuff"){buffList.appendChild(stateUIChild);}
     else{debuffList.appendChild(stateUIChild);}
 
   }
@@ -374,7 +375,7 @@ function update() {
     }
     for(let state of enemy.stateList){
       const debuffUI = document.createElement("div");
-      debuffUI.innerHTML = `${state.value??""}${state.sign}<sup>${state.TRN == Infinity ? state.TRN : ""}</sup>`;
+      debuffUI.innerHTML = `${state.value??""}${state.sign}<sup>${state.TRN != Infinity ? state.TRN : ""}</sup>`;
       debuffUI.classList.add("statusInfo");
       enemyState.appendChild(debuffUI);
       debuffUI.addEventListener("mouseover", function(event){
@@ -1029,10 +1030,15 @@ async function attack(effect, card) {
       finalStats.CRT = 100;
       characterReInfo()
     }
+    
     const p = clamp(finalStats.ACC / (finalStats.ACC + activeEnemy.finalStats.SPD), 0.15, 0.95);
+
     if(Math.random() <= p){
+      
     let modATK = (cWeapon[0].ATK * (100 + getStats("magATK")) / 100 * normalDistribution(10));
     modATK = modATK * (100 + activeEnemy.finalStats.ELE) / 100 * effect.mag / 100;
+    activeEnemy.stateList = activeEnemy.stateList.filter(s => {return (s.type != "chargeDebuff" || s.trigger != "attack");});
+    stateList = stateList.filter(s => {return (s.type != "chargeBuff" || s.trigger != "attack" );});
     if(Math.random() <= (finalStats.CRT / 100))
     {
       modATK = (modATK * (100 + finalStats.CRD) / 100);
@@ -1082,7 +1088,6 @@ async function attack(effect, card) {
     play(sounds.attack2);
     }
   await wait(200);
-    activeEnemy.stateList = activeEnemy.stateList.filter(s => {s.type != "chargeDebuff" || s.trigger != "attack"})
     update();
     characterUpdate();
   }
@@ -1324,7 +1329,8 @@ function enemyAttack(enemy, value){
     log(enemy.name + " dealt "+ (value - gainedBlock) + " damage");
     gainedBlock = 0;
     }
-    tateList = stateList.filter(s => {s.type != "chargeDebuff" || s.trigger != "attack"})
+    stateList = stateList.filter(s => {return(s.type != "chargeDebuff" || s.trigger != "attack");})
+    enemy.stateList = enemy.stateList.filter(s => {return(s.type != "chargeBuff" || s.trigger != "attack");})
   }
   else{
     log(`${enemy.name}'s attack missed`);
@@ -1367,6 +1373,7 @@ function buildState(base, name, power, turn){
     type: base.type,
     merge: base.merge,
     power,
+    trigger: base.trigger,
     TRN: turn,
     description: base.description(extra),
     ...extra

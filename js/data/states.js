@@ -111,7 +111,7 @@ export const states = {
 
 
   Strength: {
-    sign: "筋",
+    sign: "攻",
     type: "buff",
     merge: "stack",
     create(power){
@@ -146,6 +146,18 @@ export const states = {
   Focus: {
     sign: "精",
     type: "buff",
+    merge: "stack",
+    create(power){
+      return {mods:{magACC: power}, value: power};
+    },
+    description(data){
+      return `ACC +${data.value}%`;
+    }
+  },
+  FocusCharge: {
+    sign: "精",
+    type: "chargeBuff",
+    trigger: "attack",
     merge: "stack",
     create(power){
       return {mods:{magACC: power}, value: power};

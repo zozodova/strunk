@@ -129,10 +129,10 @@ export const skills = [
   {
     Tier: 3,
     effects:[
-    {type:"charge", name: "Focus",value: 100, STK: 1, }
+    {type:"buff", name: "FocusCharge",value: 100, TRN: Infinity}
     ],
-    name: "",
-    description: "Next hit is critical.",
+    name: "Deadly Eyes",
+    description: "Gain Focus +100% charge.",
     AP: 1,
     CST: 200,
     PROB: 30
