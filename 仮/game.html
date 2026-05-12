@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>battle</title>
+  <style>
+    
+#inventory{
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  width: 220px;
+  min-height: 0px;
+  padding: 0px;
+  border: 2px solid black;
+  background: white;
+  overflow-y: auto;
+}
+
+#inventory div{
+  margin-bottom: 0px;
+  padding: 0px;
+  border-bottom: 1px solid rgb(70, 70, 70);
+}
+#inventory button{
+  width: 220px;
+  margin-bottom: 2px;
+}
+
+.equipped{
+  background: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
+#tooltip{
+  position: fixed;
+  display: none;
+  background: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  padding: 8px;
+  border: 1px solid rgb(0, 0, 0);
+  font-size: 14px;
+  white-space: pre-line;
+  pointer-events: none;
+  z-index: 999;
+}
+
+#log{
+  position:fixed;
+  left: 50px;
+  top: 300px;
+  bottom: 20px;
+  width: 30%;
+  border: 2px solid black;
+  overflow-y: scroll; 
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+#playerStatus{
+  position: fixed;
+  bottom:50px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.EnemyArea{
+    position: fixed;
+  top:10px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+
+<div class="EnemyArea">
+  <div id = "enemyStatus" style="display: none">
+    <p id = "enemyInfo" style="left: 0;"></p>
+    <div style="width: 200px; height: 10px; background: rgb(255, 255, 255); border: 1px solid #000000;">
+      <div id="enemyHPBar" style="height: 100%; width: 100%; background: rgb(0, 0, 0);"></div>
+        
+    </div>
+  </div>
+  <div id="reward"></div>
+</div>
+
+
+
+
+<div id="playerStatus">
+  <p id = "playerInfo"></p>
+  <div style="width: 200px; height: 10px; background: rgb(255, 255, 255); border: 1px solid #000000;">
+    <div id="playerHPBar" style="height: 100%; width: 100%; background: rgb(0, 0, 0);"></div>
+  </div>
+  <div id="commands" style="display: none">
+    <p id="actionPoint"></p>
+    <div style ="border: 1px solid #000000;">
+      <button onclick="attack()">Attack<p id="attackAP"></p></button>
+      <button onclick="finish()" style="width: 100%; height: 20px; bottom: 0;">End Turn<p></p></button>
+  </div>
+  
+</div>
+
+</div>
+
+
+<div id="inventory"></div>
+<div id="tooltip"></div>
+
+
+<div id="choices" style="display: block;">
+  <button onclick="goLeft()">Left</button>
+  <button onclick="goStraight()">Forward</button>
+  <button onclick="goRight()">Right</button>
+</div>
+
+<p id="log" style="white-space: pre-line;"></p>
+
+
+
+<script>
+let maxHP = 100
+let playerHP = maxHP;
+let maxAP = 5;
+let playerAP = maxAP;
+
+let coin = 0;
+
+let inventory = [];
+
+let currentEnemy;
+
+const swordSound = new Audio("sword_atk.mp3");
+const healSound = new Audio("heal.mp3");
+const coinSound = new Audio("coin.mp3");
+const confirmSound = new Audio("confirm.mp3");
+const errorSound = new Audio("error.mp3");
+
+
+
+const monsters = [
+  {
+    name: "Slime",
+    HP: 50,
+    ATK: 10,
+    PROB: 60,
+    COIN: 10
+  },
+  {
+    name: "Goblin",
+    HP: 30,
+    ATK: 15,
+    PROB: 50,
+    COIN: 15
+  },
+  {
+    name: "Dragon",
+    HP: 150,
+    ATK: 20,
+    PROB: 10,
+    COIN: 40
+  }
+];
+
+const weapons = [
+  {
+    name: "Iron Sword",
+    ATK: 5,
+    TIMES: 1,
+    ACC: 10,
+    AP: 1,
+    CRIT: 10,
+    Status: "None",
+    PROB: 50
+  },
+  {
+    name: "Dual Knife",
+    ATK: 2,
+    TIMES: 2,
+    ACC: 10,
+    AP: 1,
+    CRIT: 30,
+    Status: "None",
+    PROB: 50
+  }
+];
+
+let currentWeapon = weapons[0];
+inventory.push(weapons[0]);
+  updateInventory();
+
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function update() {
+  document.getElementById("attackAP").innerText = currentWeapon.AP;
+  document.getElementById("playerInfo").innerText =
+    `HP: ${playerHP} /Coin: ${coin}`;
+  let percent1 = (playerHP / maxHP) * 100;
+  document.getElementById("playerHPBar").style.width = percent1 + "%";
+  if (currentEnemy) {
+    document.getElementById("enemyInfo").innerText =
+      `${currentEnemy.name} \n HP: ${enemyHP}`;
+    let percent2 = (enemyHP / currentEnemy.HP) * 100;
+    document.getElementById("enemyHPBar").style.width = percent2 + "%";
+  }
+
+  document.getElementById("actionPoint").innerText =
+    "▮".repeat(playerAP) + "▯".repeat(maxAP - playerAP);
+
+    updateInventory();
+}
+
+function updateInventory() {
+  const inv = document.getElementById("inventory");
+  inv.innerHTML = "";
+
+  inventory.forEach((weapon, index) => {
+
+    const wrap = document.createElement("div");
+    const button = document.createElement("button");
+
+    button.innerText = weapon.name;
+
+    if (weapon === currentWeapon) {
+      button.classList.add("equipped");
+    }
+    button.addEventListener("click", function () {
+      equipFromInventory(index);
+    });
+
+    button.addEventListener("mouseover", function (event) {
+      showTooltip(
+        `${weapon.name} 
+        ATK: ${weapon.ATK} x ${weapon.TIMES}
+        AP: ${weapon.AP}
+        Crit: ${weapon.CRIT}%`,
+        event
+      );
+    });
+
+    button.addEventListener("mousemove", function (event) {
+      moveTooltip(event);
+    });
+
+    button.addEventListener("mouseout", function () {
+      hideTooltip();
+    });
+
+    wrap.appendChild(button);
+    inv.appendChild(wrap);
+  });
+}
+
+function showTooltip(text, event){
+  const tip = document.getElementById("tooltip");
+
+  tip.innerText = text;
+  tip.style.display = "block";
+  tip.style.left = (event.clientX) + "px";
+  tip.style.top  = (event.clientY) + "px";
+}
+
+function moveTooltip(event){
+  const tip = document.getElementById("tooltip");
+  tip.style.left = (event.clientX) + "px";
+  tip.style.top  = (event.clientY) + "px";
+}
+function hideTooltip(){
+  document.getElementById("tooltip").style.display = "none";
+}
+
+
+function equipFromInventory(index) {
+  currentWeapon = inventory[index];
+  log("Equipped " + currentWeapon.name);
+  update();
+}
+
+function log(text) {
+  const logElement = document.getElementById("log");
+  logElement.innerText = text + "\n" + logElement.innerText;
+}
+
+
+function goStraight(){
+  log("You moved forward");
+  document.getElementById("reward").style.display = "none";
+
+  let e = Math.floor(Math.random() * 100);
+  if(e <= 50){
+    spawnEnemy();
+  }
+}
+
+function goLeft(){
+  log("You moved left");
+  document.getElementById("reward").style.display = "none";
+
+  let e = Math.floor(Math.random() * 100);
+  if(e <= 50){
+    spawnEnemy();
+  }
+}
+
+function goRight(){
+  log("You moved right");
+  document.getElementById("reward").style.display = "none";
+
+  let e = Math.floor(Math.random() * 100);
+  if(e <= 50){
+    spawnEnemy();
+  }
+}
+
+function spawnEnemy() {
+  playerAP = 5;
+  document.getElementById("choices").style.display = "none";
+  document.getElementById("commands").style.display = "block";
+  document.getElementById("enemyStatus").style.display = "block";
+  let totalWeight = 0;
+  monsters.forEach(monster => {
+    totalWeight += monster.PROB;
+  });
+  let r = Math.floor(Math.random() * totalWeight);
+
+  for (let monster of monsters) {
+    if (r < monster.PROB) {
+      currentEnemy = monster;
+      break;
+    }
+
+    r -= monster.PROB;
+  }
+
+  document.getElementById("enemyInfo").innerText = `${currentEnemy.name} \n HP: ${currentEnemy.HP}`;
+  enemyHP = currentEnemy.HP;
+  update();
+
+
+}
+async function attack() {
+    if (playerAP < currentWeapon.AP) {
+    log("Not enough AP");
+    errorSound.currentTime = 0;
+    errorSound.play();
+  return;
+}
+  playerAP -= currentWeapon.AP;
+
+  for (let i = 1; i <= currentWeapon.TIMES ; i++)
+  { 
+
+    let damage = (normalDistribution(currentWeapon.ACC)*currentWeapon.ATK);
+    if(Math.random() <= (currentWeapon.CRIT / 100))
+    {
+      damage = (damage * 1.25);
+    }
+    damage = Math.round(damage);
+  enemyHP -= damage;
+  const s = swordSound.cloneNode();
+  //s.play();
+  log("You dealt " + damage + " damage");
+  await wait(100);
+    update();
+  }
+  checkGame();
+}
+
+function normalDistribution(accuracy){
+	var x = Math.random();
+	var y = Math.random();
+	
+	var z1 = 1 + Math.sqrt(-2*Math.log(x))*Math.cos(2 * Math.PI  * y)* accuracy/100;
+
+	return z1;
+}
+
+function heal() {
+   if (playerAP < 1) {
+    log("Not enough AP");
+    errorSound.currentTime = 0;
+    errorSound.play();
+  return;
+}
+  let amount = Math.floor(Math.random() * 15) + 5;
+  healSound.currentTime = 0;
+  healSound.play();
+  playerHP += amount;
+  playerAP -= 1;
+  log("You " + amount + " damage recovered");
+
+  update();
+  checkGame();
+}
+
+function finish(){
+  playerAP = 5;
+  enemyTurn();
+  update();
+  checkGame();
+}
+function enemyTurn() {
+  if (enemyHP <= 0) return;
+
+  let action = Math.random();
+
+  if (action < 0.7) {
+    let damage = Math.round(normalDistribution(10)*currentEnemy.ATK);
+    playerHP -= damage;
+    log(currentEnemy.name + " dealt "+ damage + " damage");
+  } else {
+  }
+}
+
+function checkGame() {
+  if (playerHP <= 0) {
+    log("You lose")
+    reset();
+  } else if (enemyHP <= 0) {
+    log("You win");
+      document.getElementById("choices").style.display = "block";
+      document.getElementById("commands").style.display = "none";
+      document.getElementById("enemyStatus").style.display = "none";
+      document.getElementById("reward").style.display = "block";
+
+      const rew = document.getElementById("reward");
+      rew.innerHTML += `
+      <div>
+        <button id = "coinBtn", onclick="collectCoins(this)">${currentEnemy.COIN} Coins</button>
+      </div>
+    `;
+      if (Math.random() < 1) {
+      dropWeapon();
+      }
+  }
+}
+
+function dropWeapon() {
+  let totalWeight = 0;
+  let weaponIndex = 0;
+  weapons.forEach(weapon => totalWeight += weapon.PROB);
+
+  let r = Math.floor(Math.random() * totalWeight);
+   for (let i = 0; i < weapons.length; i++) {
+    if (r < weapons[i].PROB) {
+      weaponIndex = i;
+      break;
+    }
+    r -= weapons[i].PROB;
+  }
+
+  const rew = document.getElementById("reward");
+  rew.innerHTML += `
+      <div>
+        <button onclick="pickUpWeapon(${weaponIndex},this)">${weapons[weaponIndex].name}</button>
+      </div>
+    `;
+}
+
+function pickUpWeapon(index,btn) {
+  const newWeapon = { ...weapons[index] };
+  inventory.push(newWeapon);
+  log(`You got ${weapons[index].name}`);
+  updateInventory();
+  btn.remove();
+}
+
+function collectCoins(btn){
+  coin += currentEnemy.COIN;
+  btn.remove();
+  log(`You got ${currentEnemy.COIN} coin`);
+  update();
+}
+function reset() {
+  playerHP = maxHP;
+  playerAP = maxAP;
+  update();
+  log("");
+}
+
+update();
+</script>
+
+</body>
+</html>

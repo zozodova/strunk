@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>battle</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&family=Yuji+Mai&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Grenze:ital,wght@0,100..900;1,100..900&family=Manufacturing+Consent&family=Yuji+Mai&display=swap" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="css/base.css">
+</head>
+<body>
+<div id="startScreen">
+  <div id = "startButtons">
+  <button id="startButton"> Game Start </button>
+  </div>
+</div>
+
+<div id="gamePlay" style="display: none;">
+  <div id="center-area">
+    <div id="fadeScreen"></div>
+    <div id="bigText"></div>
+    <div id="enemyArea">
+    </div>
+
+
+    <button id="rewardBox" style="display:none;">Reward</button>
+
+
+    <button id="NPC" style="display:none;"></button>
+
+
+    <div class="notBattleUI">
+      <div class="direction" style="top:25%; left: 50%;"></div>
+      <div class="direction" style="top:50%; left: 80%;"></div>
+      <div class="direction" style="top:75%; left: 50%;"></div>
+      <div class="direction" style="top:50%; left: 20%;"></div>
+      <button class="directionButton" data-dir="north" style="top:35%; left: 50%;">North</button>
+      <button class="directionButton" data-dir="east"  style="top:50%; left: 70%;">East</button>
+      <button class="directionButton" data-dir="south" style="top:65%; left: 50%;">South</button>
+      <button class="directionButton" data-dir="west"  style="top:50%; left: 30%;">West</button>
+    </div>
+
+    <div id="playerStatus">
+    <div style="position:absolute; left:7%; width:25%; height: 100%;">
+      <p id = "playerInfo"></p> 
+      <p id="actionPoint" class="battleUI" style="position:absolute; right:0; top:20px"></p>
+      <div id="playerHPBarBorder">
+        <div id="playerHPBar" style="height: 100%; width: 100%; background: var(--main-text);"></div>
+        <div id="playerBlockValue"></div>
+      </div>
+      <p id = "playerInfo2" class="notBattleUI"></p> 
+      <div id="buffList" class="state">
+      </div>
+    </div>
+    <div style="position:absolute; right:7%; width:25%; height: 100%;">
+      <div class="itemUI">Iron Sword
+      </div>
+      <div class="itemUI">
+      </div>
+      <div id="debuffList" class="state">
+      </div>
+    </div>
+
+
+    <button id="endTurnButton" class="battleUI">End Turn</button>
+    </div>
+    
+    <div id="board">
+      <button id="drawPile"></button>
+      <div id="cardWrap">
+          
+        </div>
+
+    </div>
+    <div id="cardsUI" class="decoration">
+      <button id="cardUICloseButton" class="closeButton">×</button>
+      <div id="cardsUIName"> </div>
+      <div id="cardsUIContent"> </div>
+    </div>
+
+    
+  </div>
+
+  <div id="tooltip"></div>
+  <div id="areaName"></div>
+  <div id="positionUI">
+    <div id="position" style="font-size: 30px;" ></div>
+  </div>
+
+
+  <div id="log"></div>
+  <div id="characterStatus"></div>
+  <div id="cardPlay"></div> 
+</div>
+
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,3588 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>battle</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&family=Yuji+Mai&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Grenze:ital,wght@0,100..900;1,100..900&family=Manufacturing+Consent&family=Yuji+Mai&display=swap" rel="stylesheet">
+
+
+  <style>
+
+:root {
+  --main-bg: rgb(12, 9, 1);
+  --main-text: rgb(231, 183, 78);
+  --sub-text: rgb(78, 64, 18);
+  --main-font: "Grenze", "Yuji Mai", sans-serif;
+
+  
+}
+::-webkit-scrollbar{
+  display:none;
+}
+.fir { color: #b6200c; }
+.ice { color: #108891; }
+.ltn { color: #b624c4; }
+.acd { color: #588505; }
+body{
+  font-family: var(--main-font);
+  font-size: 20px;
+  background-color: var(--main-bg);
+  color: var(--main-text);
+  line-height: 1.2;
+}
+button {
+  background-color: var(--main-bg);
+  color: var(--main-text);
+  border: none;
+  box-shadow: 2px 2px 0 var(--main-text);
+  font-family:  var(--main-font);
+  font-size: 20px;
+  cursor: pointer;
+}
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: -2px -2px 0 var(--main-text);
+}
+button.pressed {
+  transform: translate(2px, 2px);
+  box-shadow: -2px -2px 0 var(--main-text);
+  opacity: 0.5;
+  pointer-events: none;
+}
+#center-area {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+#tooltip{
+  position: fixed;
+  display: none;
+  background: var(--main-bg);
+  color: var(--main-text);
+  padding: 8px;
+  box-shadow: 2px 2px 0 var(--main-text);
+  font-size: 20px;
+  white-space: pre-line;
+  pointer-events: none;
+  z-index: 999;
+}
+
+#log{
+  z-index: 3;
+  padding: 5px;
+  border-left: 2px solid var(--sub-text);
+  position:fixed;
+  left: 50px;
+  top: 60px;
+  bottom: 70%;
+  width: 20%;
+  overflow-y: scroll; 
+  white-space: pre-line;
+}
+
+#characterStatus{
+  z-index: 3;
+  padding: 10px;
+  border-left: 2px solid var(--sub-text);
+  position:fixed;
+  right: 0px;
+  top: 30px;
+  bottom: 62%;
+  width: 22%;
+  overflow-y: auto; 
+  white-space: pre-line;
+}
+#playerStatus{
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  position: fixed;
+  text-align: left;
+  bottom: 50px;
+  width:100%; 
+  height:100px; 
+  display:flex;
+}
+#playerHPBarBorder{
+  position:relative; 
+  top: 80%; 
+  width: 100%; 
+  height: 10px; 
+  border: 1px solid var(--main-text);
+}
+#playerBlockValue{
+  position: absolute; 
+  top: 50%; 
+  left: 50%;
+  translate: -50% -50%;
+  font-size: 30px;
+  color:var(--main-text);
+  -webkit-text-stroke: 10px var(--main-bg);
+  paint-order: stroke;
+}
+.guard::before,
+.guard::after{
+  content: "";
+  position: absolute;
+  inset: -10px;
+  pointer-events: none;
+}
+.guard::before{
+  background:
+    linear-gradient(var(--main-text),var(--main-text)) left top / 20% 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) left top / 2px 15px no-repeat,
+    
+    linear-gradient(var(--main-text),var(--main-text)) right top / 20% 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) right top / 2px 15px no-repeat;
+}
+.guard::after{
+  background:
+    linear-gradient(var(--main-text),var(--main-text)) left bottom / 20% 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) left bottom / 2px 15px no-repeat,
+    
+    linear-gradient(var(--main-text),var(--main-text)) right bottom / 20% 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) right bottom / 2px 15px no-repeat;
+}
+#enemyArea{
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  position: fixed;
+  display: flex;
+  flex-wrap: nowrap;
+  top: 30px;
+  left: 50%;
+  width: 50%;
+  height: fit-content;
+  transform: translateX(-50%);
+  text-align: center;
+  justify-content: center;
+}
+.enemyStatus{
+  flex: 1;
+  width: auto;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  gap: 10px 0px;
+}
+.enemyName{
+  position: relative;
+  font-size: 30px;
+  width: fit-content;
+  padding:10px 40px;
+}
+.enemyName.targeted::before,
+.enemyName.targeted::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.enemyName.targeted::before{
+  background:
+    linear-gradient(var(--main-text),var(--main-text)) left top / 12px 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) left top / 2px 12px no-repeat,
+    
+    linear-gradient(var(--main-text),var(--main-text)) right top / 12px 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) right top / 2px 12px no-repeat;
+}
+.enemyName.targeted::after{
+  background:
+    linear-gradient(var(--main-text),var(--main-text)) left bottom / 12px 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) left bottom / 2px 12px no-repeat,
+    
+    linear-gradient(var(--main-text),var(--main-text)) right bottom / 12px 2px no-repeat,
+    linear-gradient(var(--main-text),var(--main-text)) right bottom / 2px 12px no-repeat;
+}
+
+.enemyHPBarBorder{
+  width: 100%; 
+  height: 10px; 
+  flex-shrink: 0;
+  border: 1px solid var(--main-text);
+}
+.enemyHPBar{
+  height: 100%; 
+  width: 100%; 
+  background: var(--main-text);
+}
+.enemyState{ 
+  top: 90px; 
+  width:100%; 
+  height: fit-content;
+  display: flex; 
+  flex-wrap: wrap; 
+  gap:2px 15px; 
+  overflow-y: auto;
+}
+.battleUI{
+  display: none;
+}
+.itemUI{
+  height: 30px; 
+  width: fit-content;
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  font-size: 30px;
+  display: flex;
+  padding: 5px;
+  line-height: 1;
+  border-bottom:2px solid var(--sub-text);
+}
+.directionButton{
+  position:absolute;
+  text-align: center;
+  color: var(--sub-text);
+  box-shadow: none;
+  translate: -50% -50%;
+  height:50px;
+  width: 50px;
+}
+.directionButton.mouseOver{
+  color: var(--main-text);
+}
+.directionButton:active{
+  box-shadow: none;
+  transform: translate(0, 2px);
+}
+.direction{
+  position:absolute;
+  text-align: center;
+  align-content: center;
+  font-size: 30px;
+  translate: -50% -50%;
+  height:50px;
+  width: 50px;
+}
+#rewardBox{
+  position: absolute; 
+  height: 50px; 
+  width: 100px;
+  line-height: 1.2;
+  z-index: 1;
+}
+.reward{
+  position: absolute;
+  background-color: var(--main-bg);
+  box-shadow: -2px -2px 0 var(--main-text);
+  top: 50%; 
+  left: 50%;
+  translate: -50% -50%; 
+  height: 300px;
+  width: 400px;
+  overflow-y: scroll;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  z-index: 20;
+  padding: 40px;
+  row-gap: 15px;
+}
+#reward::-webkit-scrollbar{
+  display:none;
+}
+.rewardItem{
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  width: 100%;
+  height: 50px;
+}
+.coinButton{
+  border-radius: 50px;
+}
+.buttonWrap{
+  filter: drop-shadow(2px 2px 0 var(--main-text));
+}
+.buttonWrap:active{
+  filter: drop-shadow(-2px -2px 0 var(--main-text));
+}
+
+.weaponButton{
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  height: 100%;
+  width: 100%;
+  clip-path: polygon(
+    4% 0%,
+    96% 0%,
+    100% 50%,
+    96% 100%,
+    4% 100%,
+    0% 50%
+  );
+}
+.armorButton{
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  height: 100%;
+  width: 100%;
+  clip-path: polygon(
+    3% 0%,
+    97% 0%,
+    100% 20%,
+    100% 80%,
+    97% 100%,
+    3% 100%,
+    0% 80%,
+    0% 20%
+  );
+}
+.skillButton{
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  height: 100%;
+  width: 100%;
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 100%,
+    0% 100%
+  );
+}
+.mapButton{
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  height: 100%;
+  width: 100%;
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    96% 50%,
+    100% 100%,
+    0% 100%,
+    4% 50%
+  );
+}
+.glow{
+  animation: flash 3s infinite;
+}
+
+@keyframes flash {
+  0%, 100% {
+    text-shadow: 0 0 20px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 15px currentColor;
+  }
+}
+#NPC{
+  position: absolute; 
+  height: 50px; 
+  width: 200px;
+  z-index: 1;
+}
+.spkUI{
+  position: absolute;
+  background-color: var(--main-bg);
+  box-shadow: -2px -2px 0 var(--main-text);
+  top: 50%; 
+  left: 50%;
+  translate: -50% -50%; 
+  height: 300px;
+  width: 500px;
+  padding: 50px;
+  gap: 30px 30px;
+  z-index: 10;
+}
+.glyphOnSale{
+  position: relative;
+  width:30%;
+  padding: 30px;
+  background: var(--main-bg);
+  border-radius:10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.glyphOnSaleTop{
+  position:absolute;
+  top: 20px;
+  font-size:20px;
+}
+.glyphOnSaleCenter{
+  position:absolute;
+  top: 40%;
+  font-size:25px;
+}
+.glyphOnSaleBottom{
+  position:absolute;
+  bottom: 30px;
+  font-size:20px;
+}
+.glyphOnSale.mouseOver{
+  animation:mouseOver 0.1s ease-in forwards;
+}
+.glyphOnSale.sold{
+  pointer-events: none;
+  transform: translate(2px, 2px);
+  box-shadow: -2px -2px 0 var(--main-text);
+  opacity: 0.7;
+}
+
+.closeButton{
+  position: absolute; 
+  top:5px; 
+  right:5px; 
+  width:30px; 
+  height:30px;
+}
+
+#board{
+  z-index: 5;
+  position: fixed;
+  bottom: 200px;
+  width:100%; 
+  height:100px; 
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  pointer-events: none;
+  gap: 15px;
+}
+
+.card{
+  position: relative;
+  width:120px;
+  height:180px;
+  background: var(--main-bg);
+  border:2px solid var(--sub-text);
+  border-radius:10px;
+  color: var(--main-text);
+  text-align: center;
+  justify-content: center;
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  font-size:30px;
+}
+.cardName{
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  width: 80%;
+  height: 30%;
+  top: 10%;
+  color: var(--main-text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+}
+.cardDescription{
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  width: 80%;
+  height: 40%;
+  bottom: 10%;
+  color: var(--sub-text);
+  text-align: center;
+  font-size: 20px;
+}
+.cardCost{
+  position: absolute;
+  left: 10px;
+  translate: -50% -50%;
+  width: 35px;
+  height: 35px;
+  top: 10px;
+  background-color: var(--main-bg);
+  border: 2px solid var(--sub-text);
+  border-radius: 50%;
+  color: var(--main-text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+}
+.cardCost.active{
+  border-color: (var(--main-text));
+  box-shadow: 0 0 3px currentColor;
+}
+.card.active{
+  border:2px solid var(--main-text);
+  box-shadow: 0 0 2px currentColor;
+}
+.card.draw{
+  opacity:0;
+  transform:translateX(-600px);
+  animation:draw 0.2s ease-out forwards;
+}
+.card.play{
+  z-index: 6;
+  text-shadow: 0 0 30px currentColor;
+  box-shadow: 0 0 5px currentColor;
+  animation:play 0.2s ease-in-out forwards;
+}
+.card.dispose{
+  opacity:1;
+  animation:dispose 0.2s ease-in forwards;
+}
+.card.fly{
+  opacity:1;
+  animation:fly 0.2s ease-out forwards;
+}
+.card.mouseOver{
+  animation:mouseOver 0.1s ease-in forwards;
+}
+
+@keyframes draw{
+  to{
+    opacity:1;
+    transform:translateX(0);
+  }
+}
+@keyframes mouseOver{
+  to{
+    transform: translateY(-10px) scale(1);
+  }
+}
+@keyframes play{
+  to{
+    transform: translateY(-40px) scale(1.2);
+  }
+}
+@keyframes dispose{
+  0%{
+    transform: translateY(-40px) scale(1.2);
+  }
+  100%{
+    opacity: 0;
+    transform: translateX(600px) scale(0.3);
+  }
+}
+
+@keyframes fly{
+  0%{
+    transform: translateY(-40px) scale(1.2);
+  }
+  100%{
+    opacity: 0;
+    transform: translateY(-200px) scale(0.3);
+  }
+}
+
+.shake{
+  animation: screenShake 0.1s ease;
+}
+
+@keyframes screenShake{
+  0%   { transform: translate(5px,3px); }
+  10%  { transform: translate(-3px, 5px); }
+  40%  { transform: translate(2px, 1px); }
+  70%  { transform: translate(-1px, -2px); }
+  100% { transform: translate(0,0); }
+}
+
+.statusInfo{
+  width: fit-content;
+  height: fit-content;
+  font-size: 20px;
+}
+
+#drawPile{
+  position: absolute;
+  left: 5%;
+  width:120px;
+  height:180px;
+  background-color: var(--main-bg);
+  border:2px solid var(--sub-text);
+  box-shadow: 5px 5px 0 var(--sub-text);
+  border-radius:10px;
+  color: var(--main-text);
+  text-align: center;
+  justify-content: center;
+  font-size:30px;
+  pointer-events: auto;
+}
+#cardsUI{
+  z-index:200;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width:80%;
+  height:80%;
+  padding: 30px;
+  background: var(--main-bg);
+  border:2px solid var(--sub-text);
+  border-radius:10px;
+  display: none;
+  flex-wrap: wrap;
+  gap: 30px 30px;
+  overflow-y: auto;
+  align-content:flex-start;
+}
+#state{
+  position:absolute; 
+  top: 90px; 
+  width:100%; 
+  height: 50px; 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap:2px 15px; 
+  overflow-y: auto;
+}
+
+.portal{
+  position: absolute; 
+  display: flex;
+  height: 100px; 
+  width: 100px;
+  background-color: var(--main-bg);
+  border: 2px solid var(--main-text);
+  border-radius: 50px;
+  box-shadow: 0 0 20px currentColor;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+#fadeScreen{
+  position: fixed;
+  display: flex;
+  inset: 0;
+  background: black;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.6s;
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  font-size: 50px;
+  justify-content: center;
+  align-items: center;
+}
+#bigText{
+  position: fixed;
+  display: flex;
+  right:-20px;
+  left: -20px;
+  bottom: 45%;
+  top: 45%;
+  background: var(--main-bg);
+  border: 2px solid var(--main-text);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transition: opacity 0.6s;
+  font-family: "Manufacturing Consent", "Yuji Mai";
+  font-size: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+#positionUI{
+  position:fixed; 
+  top: 20px; 
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  width: fit-content;
+  overflow-y: auto;
+  text-align: center;
+}
+
+#areaName{
+  position:fixed; 
+  top: 20px; 
+  left: 50px;
+  height: 100px;
+  width: 10%;
+  font-size: 30px;
+}
+
+
+</style>
+</head>
+<body>
+
+
+
+<div id="center-area">
+  <div id="fadeScreen"></div>
+  <div id="bigText"></div>
+  <div id="enemyArea">
+  </div>
+
+
+  <button id="rewardBox" onclick="showReward();" style="display:none;">Reward
+  </button>
+
+
+  <button id="NPC" onclick="speakNPC();" style="display:none;">
+  </button>
+
+
+  <div id="choices">
+    <div class="direction" onclick="goStraight()" style="top:25%; left: 50%;"></div>
+    <div class="direction" onclick="goLeft()" style="top:50%; left: 20%;"></div>
+    <div class="direction" onclick="goRight()" style="top:50%; left: 80%;"></div>
+    <div class="direction" onclick="goDown()" style="top:75%; left: 50%;"></div>
+    <button class="directionButton" onclick="goStraight()" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)" style="top:35%; left: 50%;">North</button>
+    <button class="directionButton" onclick="goLeft()" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)" style="top:50%; left: 30%;">West</button>
+    <button class="directionButton" onclick="goRight()" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)" style="top:50%; left: 70%;">East</button>
+    <button class="directionButton" onclick="goDown()" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)" style="top:65%; left: 50%;">South</button>
+  </div>
+
+  <div id="playerStatus">
+  <div style="position:absolute; left:7%; width:25%; height: 100%;">
+    <p id = "playerInfo" style="position:absolute; top:7%; font-size: 30px;"></p> 
+    <p id="actionPoint" class="battleUI" style="position:absolute; right:0; top:20%;"></p>
+    <div id="playerHPBarBorder">
+      <div id="playerHPBar" style="height: 100%; width: 100%; background: var(--main-text);"></div>
+      <div id="playerBlockValue"></div>
+    </div>
+    <p id = "playerInfo2" style="position:absolute; top:80%; font-size: 20px;"></p> 
+  </div>
+  <div style="position:absolute; right:0; width:32%; height: 100%;">
+    <div class="itemUI">Iron Sword
+    </div>
+    <div class="itemUI">
+    </div>
+    <div id="state">
+    </div>
+  </div>
+
+
+  <button id="endTurnButton" class="battleUI" onclick="turnEnd();" style="position:absolute; left:50%; bottom:0px; height:50px; width:20%; translate: -50% 0">End Turn</button>
+  </div>
+  
+  <div id="board">
+        <button id="drawPile" onclick="showDrawPile()"></button>
+    </div>
+  <div id="cardsUI">
+    <button class="closeButton" onclick="closeDrawPile()">×</button>
+  </div>
+
+  
+</div>
+
+<div id="tooltip"></div>
+<div id="areaName"></div>
+<div id="positionUI">
+  <div id="position" style="font-size: 30px;"></div>
+</div>
+
+
+<div id="log"></div>
+<div id="characterStatus"></div>
+
+
+
+<script>
+let maxHP = 1000
+let playerHP;
+let maxAP = 5;
+let playerAP = maxAP;
+let playerBlock = 0;
+let gainedBlock = 0;
+
+let isCombat = false;
+let coin = 999999;
+
+let enemies = [];
+let randomEvents = [];
+let rewardList = [];
+let NPCList = [];
+let buffs = [];
+let debuffs = [];
+let enemyBuffs = [];
+let enemyDebuffs = [];
+let mapList = [];
+
+let combatEnemy;
+let cEnemy = [];
+let activeEnemy;
+
+let speakingNPC;
+
+const attackSound = new Audio("attack.wav");
+const attack2Sound = new Audio("attack2.wav");
+const blockSound = new Audio("Block.wav");
+const moveSound = new Audio("move.wav");
+const errorSound = new Audio("error.mp3");
+const buffSound = new Audio("buff.wav");
+const debuffSound = new Audio("debuff.wav");
+const criticalSound = new Audio("critical.wav");
+const clickSound = new Audio("click.wav");
+const drawSound = new Audio("draw.wav");
+
+let position = { x: 0, y: 0 };
+let portalPos =  { x: 0, y: 0 };
+
+let deck = [];
+let drawPile = [];
+let disposePile = [];
+let hand = [];
+
+let maxCard= 20;
+
+let mapWidth = { min: -10, max: 10 };
+let mapHeight = { min: -10, max: 10 };
+
+
+let cReward;
+
+const monsters = {
+  Forest: [{
+    Tier: 1,
+    content:[{
+      name: "Slime",
+      HP: 300,
+      ATK: 100,
+      DEF: 50,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Block", rate:1, sd:10, value:0}]
+      ],
+      step: 0,
+      SPD: 100
+    }],
+    PROB: 60,
+    COIN: 10,
+    REW: [50, 50, 50, 5]
+  },
+  {
+    Tier: 1,
+    content:[{
+      name: "Rat",
+      HP: 100,
+      ATK: 100,
+      DEF: 50,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Block", rate:1, sd:10, value:0}]
+      ],
+      step: 0,
+      SPD: 100
+    },
+    {
+      name: "Rat",
+      HP: 100,
+      ATK: 100,
+      DEF: 50,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Block", rate:1, sd:10, value:0}]
+      ],
+      step: 0,
+      SPD: 100
+    }
+  ],
+    PROB: 40,
+    COIN: 10,
+    REW: [50, 50, 50, 5]
+  },
+  {
+    Tier: 1,
+    content:[{
+      name: "Goblin",
+      HP: 200,
+      ATK: 150,
+      DEF: 50,
+      pattern:[
+      [{type:"Block", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", name:"Spier", rate:1.2, sd:10, value:0}],
+      ],
+      step: 0,
+      SPD: 250
+    }],
+    PROB: 50,
+    COIN: 15,
+    REW: [50, 50, 50, 5]
+  },
+  {
+    Tier: 2,
+    content:[{
+      name: "Wolf",
+      HP: 300,
+      ATK: 200,
+      DEF: 0,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1.5, sd:10, value:0}],
+      ],
+      step: 0,
+      SPD: 300
+    }],
+    PROB: 20,
+    COIN: 40,
+    REW: [100,30, 40, 10]
+  },
+  {
+    Tier: 3,
+    content: [{
+      name: "Dragon",
+      HP: 1500,
+      ATK: 200,
+      DEF: 100,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Block", rate:1, sd:10, value:0}],
+      [{type:"None", name:"Dragon is inhaling..."}],
+      [{type:"Attack", name:"Scorching Breath", rate:4.995, sd:0, value:0}],
+      ],
+      step: 0,
+      SPD: 200
+    }],
+    PROB: 10,
+    COIN: 100,
+    REW: [80, 90, 90, 100]
+  },
+  {
+    Tier: 1,
+    content: [{
+      name: "Snake",
+      HP: 180,
+      ATK: 100,
+      DEF: 50,
+      pattern:[
+      [{type:"Block", rate:1, sd:10, value:0}],
+      [
+        {type:"Attack", rate:1, sd:10, value:0},
+        {type:"DamageDebuff", name:"Poison", rate:1, sd:0, value: 100}
+      ],
+      ],
+      step: 0,
+      SPD: 200
+    }],
+    PROB: 40,
+    COIN: 20,
+    REW: [50, 50, 50, 5]
+  },
+  {
+    Tier: 5,
+    content: [{
+      name: "Gold Slime",
+      HP: 5000,
+      ATK: 300,
+      DEF: 500,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Block", rate:1, sd:10, value:0}]
+      ],
+      step: 0,
+      SPD: 100,
+    }],
+    PROB: 1,
+    COIN: 9999,
+    REW: [100, 100, 100, 100]
+  }],
+  Desert: [{
+    Tier: 2,
+    content: [{
+      name: "Desert Slime",
+      HP: 500,
+      ATK: 100,
+      DEF: 70,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Block", rate:1, sd:10, value:0}]
+      ],
+      step: 0,
+      SPD: 100,
+    }],
+    PROB: 60,
+    COIN: 20,
+    REW: [50, 50, 50, 5]
+  },
+  {
+    Tier: 2,
+    content: [{
+      name: "Mummy",
+      HP: 500,
+      ATK: 180,
+      DEF: 40,
+      pattern:[
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Attack", rate:1, sd:10, value:0}],
+      [{type:"Block", rate:1, sd:10, value:0}]
+      ],
+      step: 0,
+      SPD: 50,
+    }],
+    PROB: 40,
+    COIN: 40,
+    REW: [50, 50, 50, 5]
+  },
+  {
+    Tier: 3,
+    content: [{
+      name: "Scorpion",
+      HP: 400,
+      ATK: 200,
+      DEF: 120,
+      pattern:[
+      [
+        {type:"Attack", rate:1, sd:10, value:0},
+        {type:"DamageDebuff", name:"Poison", rate:1, sd:0, value: 150}
+      ],
+      [{type:"Block", rate:1, sd:10, value: 0}]
+      ],
+      step: 0,
+      SPD: 250
+    }],
+    PROB: 20,
+    COIN: 70,
+    REW: [50, 50, 50, 5]
+  },
+  ]
+};
+
+const areas = [
+  {
+    id: 1,
+    name: "Forest",
+    bColor: "rgb(12, 20, 13)",
+    mColor: "rgb(174, 238, 177)",
+    sColor: "rgb(93, 136, 86)"
+  },
+  {
+    id: 2,
+    name: "Desert",
+    bColor: "rgb(12, 9, 1)",
+    mColor: "rgb(231, 183, 78)",
+    sColor: "rgb(78, 64, 18)"
+  },
+];
+
+const events = [
+  {
+    type: "TreasureBox",
+    name: "Stash",
+    PROB: 50,
+    min: 40,
+    max: 50,
+    mapPROB: 0,
+  },
+  {
+    type: "NPC",
+    name: "Smith",
+    PROB: 100,
+    min: 2,
+    max: 2,
+    mapPROB: 30,
+  },
+  {
+    type: "Portal",
+    name: "Portal",
+    PROB: 100,
+    min: 1,
+    max: 1,
+    mapPROB: 10,
+  },
+];
+
+const weapons = [
+  {
+    name: "Sword",
+    Tier: 1,
+      ATK: 50,
+      ACC: 200,
+      CRT: 10,
+      CRD: 50,
+    mods: {
+      BLE: 10
+    },
+    SLT: 1,
+    PROB: 30
+  },
+  {
+    name: "Axe",
+    Tier: 1,
+      ATK: 60,
+      ACC: 160,
+      CRT: 10,
+      CRD: 70,
+    mods: {
+      BLE: 10
+    },
+    SLT: 1,
+    PROB: 30
+  },
+  {
+    name: "Mace",
+    Tier: 1,
+      ATK: 70,
+      ACC: 150,
+      CRT: 10,
+      CRD: 50,
+    mods: {
+      STN: 10
+    },
+    SLT: 1,
+    PROB: 30
+  },
+  {
+    name: "Dagger",
+    Tier: 1,
+      ATK: 30,
+      ACC: 230,
+      CRT: 30,
+      CRD: 70,
+    mods: {
+      BLE: 20
+    },
+    SLT: 1,
+    PROB: 30
+  },
+  {
+    name: "Bow",
+    Tier: 1,
+      ATK: 70,
+      ACC: 100,
+      CRT: 50,
+      CRD: 70,
+    mods: {
+      BLE: 40
+    },
+    SLT: 1,
+    PROB: 30
+  },
+  {
+    name: "Fire Sword",
+    Tier: 2,
+      ATK: 40,
+      ACC: 300,
+      CRT: 10,
+      CRD: 25,
+    mods: {
+      BLE: 10,
+      conFIR: 50,
+      magFIR: 50
+    },
+    SLT: 2,
+    PROB: 20
+  },
+];
+
+const armors = [
+  {
+    name: "Leather Armor",
+    Tier: 1,
+    DEF: 50,
+    magFIR: 0,
+    magICE: 0,
+    magLTN: 0,
+    magACD: 0,
+    PROB: 0,
+  },
+  {
+    name: "Iron Armor",
+    Tier: 1,
+    DEF: 80,
+    magFIR: 0,
+    magICE: 0,
+    magLTN: 0,
+    magACD: 0,
+    PROB: 30,
+  },
+  {
+    name: "Elemental Armor",
+    Tier: 2,
+    DEF: 60,
+    mods: {
+      magFIR: 20,
+      magICE: 20,
+      magLTN: 20,
+      magACD: 20,
+    },
+    PROB: 10,
+  },
+];
+
+const skills = [
+  {
+    Tier: 1,
+    effects:[
+    {type:"attack", mag: 100},
+    ],
+    name: "Strike",
+    description: "deal 100% weapon damage.",
+    AP: 1,
+    PROB: 30
+  },
+  {
+    Tier: 1,
+    effects:[
+    {type:"block", mag: 100},
+    ],
+    name: "Block",
+    description: "gain 100% armor block.",
+    AP: 1,
+    PROB: 30
+  },
+  {
+    Tier: 1,
+    effects:[
+    {type:"block", mag: 60},
+    {type:"buff", name: "Mana", description: `Gain 1 AP`,
+      mods:{
+      addAP: 1,
+      },
+      TRN: 2
+    }
+    ],
+    name: "Brace",
+    description: "Gain 60% armor block. Gain 1 AP next turn.",
+    AP: 1,
+    PROB: 30
+  },
+  {
+    Tier: 1,
+    effects:[
+    {type:"attack", mag: 220},
+    ],
+    name: "Heavy Strike",
+    description: "deal 220% weapon damage.",
+    AP: 2,
+    PROB: 30
+  },
+  {
+    Tier: 1,
+    effects:[
+    {type:"attack", mag: 60, CHN: 2,},
+    ],
+    name: "Dual Strike",
+    description: "deal 50% weapon damage. \n attack twice.",
+    AP: 1,
+    PROB: 30
+  },
+  {
+    Tier: 1,
+    effects:[
+    {type:"draw", value: 2},
+    ],
+    name: "Rush",
+    description: "Draw 2 cards",
+    AP: 1,
+    PROB: 30
+  },
+  {
+    Tier: 2,
+    effects:[
+    {type:"attack", mag: 80},
+    {type:"debuff", name: "Vulnerable", description: `DEF -30%`,
+      mods:{
+      magDEF: -30
+      },
+      TRN: 2,}
+    ],
+    name: "Guard Break",
+    description: "Deal 80% weapon damage. Enemy DEF -30% for 2 turns.",
+    AP: 1,
+    PROB: 30
+  },
+  {
+    Tier: 1,
+    effects:[
+    {
+      type:"buff", 
+      name: "Incineration",
+      description: `<span class="fir">FIR +50%</span>`,
+      mods:{
+      magFIR: 50
+      },
+      TRN: 1,
+    },
+    ],
+    name: "Incineration",
+    description: `<span class="fir">FIR +50%</span>`,
+    AP: 1,
+    PROB: 30
+  },
+  {
+    Tier: 2,
+    effects:[
+    {
+      type:"buff", 
+      name: "Flame Imbue",
+      description: `<span class="fir">50% PSC convert to FIR"</span>`,
+      mods:{
+      conFIR: 50
+      },
+      TRN: 2,
+    },
+    ],
+    name: "Flame Imbue",
+    description: `<span class="fir">50% PSC convert to FIR</span>`,
+    AP: 1,
+    PROB: 30
+  },
+  
+];
+
+const glyphs = [
+  {
+    id: 1,
+    name: "力",
+    read: "Riki",
+    description: "+10% ATK",
+    mods:{
+      magATK: 10
+    },
+    CST: 30,
+    PROB: 30
+  },
+  {
+    id: 2,
+    name: "炎",
+    read: "En",
+    description: "convert 20% PSC damage to FIR damage",
+    mods:{
+      conFIR: 20
+    },
+    CST: 30,
+    PROB: 30
+  },
+  {
+    id: 3,
+    name: "氷",
+    read: "Hyoh",
+    description: "convert 20% PSC damage to ICE damage",
+    mods:{
+      conICE: 20
+    },
+    CST: 30,
+    PROB: 30
+  },
+  {
+    id: 4,
+    name: "雷",
+    read: "Rai",
+    description: "convert 20% PSC damage to LTN damage",
+    mods:{
+      conLTN: 20
+    },
+    CST: 30,
+    PROB: 30
+  },
+  {
+    id: 5,
+    name: "酸",
+    read: "San",
+    description: "convert 20% PSC damage to ACD damage",
+    mods:{
+      conACD: 20
+    },
+    CST: 30,
+    PROB: 30
+  },
+  {
+    id: 6,
+    name: "心",
+    read: "Sin",
+    description:  "+30% ACC",
+    mods:{
+      magACC: 30
+    },
+    CST: 50,
+    PROB: 30
+  },
+   {
+    id: 7,
+    name: "眼",
+    read: "Gan",
+    description: "+40% CRT",
+    mods:{
+      magCRT: 40
+    },
+    CST: 50,
+    PROB: 30
+  },
+  {
+    id: 8,
+    name: "渾",
+    read: "Kon",
+    description: "+40% CRD",
+    mods:{
+      magCRD: 40
+    },
+    CST: 50,
+    PROB: 30
+  },
+  {
+    id: 9,
+    name: "乱",
+    read: "Ran",
+    description: "+15% ATK -30% ACC",
+    mods:{
+      magATK: 15,
+      magACC: -30
+    },
+    CST: 50,
+    PROB: 30
+  },
+  {
+    id: 10,
+    name: "律",
+    read: "Ritsu",
+    description: "Every third attack is Critical.",
+    CST: 200,
+    PROB: 10
+  },
+  {
+    id: 11,
+    name: "猛",
+    read: "Moh",
+    description: "+20% ATK when your HP falls below 30%",
+    CST: 200,
+    PROB: 10
+  },
+];
+
+const prefixes = [
+  {
+    name:"Worn", 
+    mods:{},
+    PROB: 100
+  },
+  {
+    name:"Rusted", 
+    mods:{},
+    PROB: 100
+  },
+  {
+    name:"Crude", 
+    mods:{},
+    PROB: 100
+  },
+  {
+    name:"Burning", 
+    mods:{conFIR: 20},
+    PROB: 10
+  },
+  {
+    name:"Scorching", 
+    mods:{conFIR: 40},
+    PROB: 5
+  },
+  {
+    name:"Infernal", 
+    mods:{conFIR: 60},
+    PROB: 1
+  },
+  {
+    name:"Frozen", 
+    mods:{conICE: 20},
+    PROB: 10
+  },
+  {
+    name:"Glacial", 
+    mods:{conICE: 40},
+    PROB: 5
+  },
+  {
+    name:"Absolute", 
+    mods:{conICE: 60},
+    PROB: 1
+  },
+  {
+    name:"Spark", 
+    mods:{conLTN: 20},
+    PROB: 10
+  },
+  {
+    name:"Tempest", 
+    mods:{conLTN: 40},
+    PROB: 5
+  },
+  {
+    name:"Cataclysmic", 
+    mods:{conLTN: 60},
+    PROB: 1
+  },
+  {
+    name:"Toxic", 
+    mods:{conACD: 20},
+    PROB: 10
+  },
+  {
+    name:"Caustic", 
+    mods:{conACD: 40},
+    PROB: 5
+  },
+  {
+    name:"Venomous", 
+    mods:{conACD: 60},
+    PROB: 1
+  },
+  {
+    name:"Vaporborn", 
+    mods:{conFIR: 40, conICE: 40},
+    PROB: 3
+  },
+  {
+    name:"Sunburst", 
+    mods:{conFIR: 40, conLTN: 40},
+    PROB: 3
+  },
+  {
+    name:"Blightflame", 
+    mods:{conFIR: 40, conACD: 40},
+    PROB: 3
+  },
+  {
+    name:"Cryoshock", 
+    mods:{conICE: 40, conLTN: 40},
+    PROB: 3
+  },
+  {
+    name:"Crystal Decay", 
+    mods:{conICE: 40, conACD: 40},
+    PROB: 3
+  },
+  {
+    name:"Corrosion Pulse", 
+    mods:{conLTN: 40, conACD: 40},
+    PROB: 3
+  },
+  {
+    name:"Heavy", 
+    mods:{magATK: 10},
+    PROB: 10
+  },
+  {
+    name:"Savage", 
+    mods:{magATK: 30},
+    PROB: 5
+  },
+  {
+    name:"Tyrant", 
+    mods:{magATK: 50},
+    PROB: 1
+  },
+  {
+    name:"Sharp", 
+    mods:{magCRT: 20},
+    PROB: 10
+  },
+  {
+    name:"Deadly", 
+    mods:{magCRT: 40},
+    PROB: 5,
+  },
+  {
+    name:"Executioner’s", 
+    mods:{magCRT: 60},
+    PROB: 1
+  },
+  {
+    name:"Rainbow", 
+    mods:{conFIR: 20, conICE: 20, conLTN: 20, conACD: 20,},
+    PROB: 1
+  },
+  {
+    name:"Sturdy", 
+    mods:{magDEF: 20},
+    PROB: 10
+  },
+  {
+    name:"Fortress", 
+    mods:{magDEF: 40},
+    PROB: 5
+  },
+  {
+    name:"Adamant", 
+    mods:{magDEF: 60},
+    PROB: 1
+  },
+  {
+    name:"Vital", 
+    mods:{magHP: 20},
+    PROB: 10
+  },
+  {
+    name:"Colossal", 
+    mods:{magHP: 40},
+    PROB: 5
+  },
+  {
+    name:"Brobdingnagian", 
+    mods:{magHP: 60},
+    PROB: 1
+  },
+  {
+    name:"Awakened", 
+    mods:{addAP: 1},
+    PROB: 2
+  },
+  {
+    name:"Ascendant", 
+    mods:{addAP: 2},
+    PROB: 0.2
+  },
+];
+const suffixes = [
+  {
+    name:"", 
+    mods:{},
+    PROB: 500
+  },
+  {
+    name:"of Embers", 
+    mods:{magFIR: 20},
+    PROB: 20
+  },
+  {
+    name:"of the Furnace", 
+    mods:{magFIR: 40},
+    PROB: 5
+  },
+  {
+    name:"of Eternal Flame", 
+    mods:{magFIR: 60},
+    PROB: 1
+  },
+  {
+    name:"of Frost", 
+    mods:{magICE: 20},
+    PROB: 20
+  },
+  {
+    name:"of Pale Expanse", 
+    mods:{magICE: 40},
+    PROB: 5
+  },
+  {
+    name:"of the White Abyss", 
+    mods:{magICE: 60},
+    PROB: 1
+  },
+  {
+    name:"of Thunder", 
+    mods:{magLTN: 20},
+    PROB: 20
+  },
+  {
+    name:"of Storm Veins", 
+    mods:{magLTN: 40},
+    PROB: 5
+  },
+  {
+    name:"of Shattered Skies", 
+    mods:{magLTN: 60},
+    PROB: 1
+  },
+  {
+    name:"of Rot", 
+    mods:{magACD: 20},
+    PROB: 20
+  },
+  {
+    name:"of Decay", 
+    mods:{magACD: 40},
+    PROB: 5
+  },
+  {
+    name:"of Black Mire", 
+    mods:{magACD: 60},
+    PROB: 1
+  },
+  {
+    name:"of Steam Wounds", 
+    mods:{magFIR: 40, magICE: 40},
+    PROB: 3
+  },
+  {
+    name:"of Solar Ruin", 
+    mods:{magFIR: 40, magLTN: 40},
+    PROB: 3
+  },
+  {
+    name:"of Melted Bones", 
+    mods:{magFIR: 40, magACD: 40},
+    PROB: 3
+  },
+  {
+    name:"of White Voltage", 
+    mods:{magICE: 40, magLTN: 40},
+    PROB: 3
+  },
+  {
+    name:"of Rotten Snow", 
+    mods:{magICE: 40, magACD: 40},
+    PROB: 3
+  },
+  {
+    name:"of Venom Current", 
+    mods:{magLTN: 40, magACD: 40},
+    PROB: 3
+  },
+  {
+    name:"of Force", 
+    mods:{magATK: 10},
+    PROB: 20
+  },
+  {
+    name:"of Slaughter", 
+    mods:{magATK: 30},
+    PROB: 5
+  },
+  {
+    name:"of Annihilation", 
+    mods:{magATK: 50},
+    PROB: 1
+  },
+  {
+    name:"of Wounds", 
+    mods:{magCRD: 20},
+    PROB: 20
+  },
+  {
+    name:"of Fracture", 
+    mods:{magCRD: 40},
+    PROB: 5
+  },
+  {
+    name:"of Massacre", 
+    mods:{magCRD: 60},
+    PROB: 1
+  },
+  {
+    name:"of Variegation", 
+    mods:{magFIR: 20, magICE: 20, magLTN: 20, magACD: 20,},
+    PROB: 1
+  },
+  {
+    name:"of Stone", 
+    mods:{magDEF: 20},
+    PROB: 20
+  },
+  {
+    name:"of the Bastion", 
+    mods:{magDEF: 40},
+    PROB: 5
+  },
+  {
+    name:"of Eternity", 
+    mods:{magDEF: 60},
+    PROB: 1
+  },
+  {
+    name:"of Blood", 
+    mods:{magHP: 20},
+    PROB: 20
+  },
+  {
+    name:"of Giants", 
+    mods:{magHP: 40},
+    PROB: 5
+  },
+  {
+    name:"of Immortal", 
+    mods:{magHP: 60},
+    PROB: 1
+  },
+];
+
+let cWeapon = [{...weapons[0]}];
+let cArmor = {...armors[0]};
+let cGlyphs = [];
+let weaponPSC = 0;
+let weaponFIR = 0;
+let weaponICE = 0;
+let weaponLTN = 0;
+let weaponACD = 0;
+let magPSC_flat = 0;
+let magFIR_flat = 0;
+let magICE_flat = 0;
+let magLTN_flat = 0;
+let magACD_flat = 0;
+let conFIR = 0;
+let conICE = 0;
+let conLTN = 0;
+let conACD = 0;
+let magPSC = 0;
+let magFIR = 0;
+let magICE = 0;
+let magLTN = 0;
+let magACD = 0;
+let PSC_flat = 0;
+let FIR_flat = 0;
+let ICE_flat = 0;
+let LTN_flat = 0;
+let ACD_flat = 0;
+let PSC = 0;
+let FIR = 0;
+let ICE = 0;
+let LTN = 0;
+let ACD = 0;
+let stats = [];
+let finalStats = {};
+let area = {...areas[0]};
+let turn;
+let attackCount;
+
+let Ritsu;
+let Moh;
+
+let usedSkill;
+for (let skill of skills){
+  deck.push(skill);
+}
+
+drawPile = [...deck];
+
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function update() {
+
+  document.getElementById("playerInfo").innerText =
+    `${playerHP} / ${finalStats.HP}`;  
+  document.getElementById("playerInfo2").innerText =
+    `Coin: ${coin}`;
+
+  if(playerHP > finalStats.HP){
+    playerHP = finalStats.HP;
+  }
+  let percent1 = (playerHP / finalStats.HP) * 100;
+  document.getElementById("playerHPBar").style.width = percent1 + "%";
+  let block = cArmor.DEF;
+
+  document.getElementById("actionPoint").innerText =
+    "▮".repeat(playerAP) + "▯".repeat(finalStats.AP - playerAP);
+
+    if(playerAP == 0){
+      document.getElementById("endTurnButton").classList.add("glow");
+    }
+    else{
+      document.getElementById("endTurnButton").classList.remove("glow");
+    }
+    
+  
+  if(gainedBlock > 0){
+    if(isCombat) document.getElementById("playerBlockValue").innerText =`${gainedBlock}`;
+    document.getElementById("playerHPBarBorder").classList.add("guard");
+  }
+  else {
+    if(isCombat) document.getElementById("playerBlockValue").innerText =``;
+    document.getElementById("playerHPBarBorder").classList.remove("guard");
+  }
+    
+  const state = document.getElementById("state");
+  state.innerHTML = "";
+  for(let buff of buffs){
+    const buffUI = document.createElement("div");
+    buffUI.textContent = `${buff.name}: ${buff.TRN}`;
+    buffUI.classList.add("statusInfo");
+    state.appendChild(buffUI);
+    buffUI.addEventListener("mouseover", function(event){
+      showTooltip(
+        `${buff.name}
+        ${buff.description}`,
+        event
+      );
+    })
+    buffUI.addEventListener("mousemove", function(event){
+      moveTooltip(event);
+    })
+    buffUI.addEventListener("mouseout", function(){
+      hideTooltip();
+    })
+  }
+  for(let debuff of debuffs){
+    const debuffUI = document.createElement("div");
+    debuffUI.textContent = `${debuff.name}: ${debuff.TRN}`;
+    debuffUI.classList.add("statusInfo");
+    state.appendChild(debuffUI);
+    debuffUI.addEventListener("mouseover", function(event){
+      showTooltip(
+        `${debuff.name}
+        ${debuff.description}`,
+        event
+      );
+    })
+    debuffUI.addEventListener("mousemove", function(event){
+      moveTooltip(event);
+    })
+    debuffUI.addEventListener("mouseout", function(){
+      hideTooltip();
+    })
+  }
+  if(cEnemy.content)
+  for(let i = 0; i < cEnemy.content.length; i++){
+    const enemy = cEnemy.content[i];
+
+    document.getElementsByClassName("enemyInfo")[i].innerHTML = `${enemy.cHP} / ${enemy.block}`;
+    if(activeEnemy === enemy){
+      document.getElementsByClassName("enemyName")[i].classList.add("targeted");
+    }
+    else{
+      document.getElementsByClassName("enemyName")[i].classList.remove("targeted");
+    }
+    let percent2 = (enemy.cHP / enemy.HP) * 100;
+    document.getElementsByClassName("enemyHPBar")[i].style.width = percent2 + "%";
+
+    
+
+    const enemyState = document.getElementsByClassName("enemyState")[i];
+    enemyState.innerHTML = "";
+    
+    enemy.stats = mergeMods(...enemy.status.map(state => state.mods));
+    enemy.finalStats = {
+      ATK: Math.floor(enemy.ATK * (100 + getEnemyStats(enemy, "magATK"))/ 100),
+      DEF: Math.floor(enemy.DEF * (100 + getEnemyStats(enemy, "magDEF"))/ 100),
+      SPD: Math.floor(enemy.SPD * (100 + getEnemyStats(enemy, "magSPD"))/ 100)
+    }
+    for(let state of enemy.status){
+      const debuffUI = document.createElement("div");
+      debuffUI.textContent = `${state.name}: ${state.TRN}`;
+      debuffUI.classList.add("statusInfo");
+      enemyState.appendChild(debuffUI);
+      debuffUI.addEventListener("mouseover", function(event){
+        showTooltip(
+          `${state.name}
+          ${state.description}`,
+          event
+        );
+      })
+      debuffUI.addEventListener("mousemove", function(event){
+        moveTooltip(event);
+      })
+      debuffUI.addEventListener("mouseout", function(){
+        hideTooltip();
+      })
+    }
+  }
+}
+
+function showTooltip(text, event) {
+  const tip = document.getElementById("tooltip");
+
+  tip.innerHTML = text;
+  tip.style.display = "block";
+  let left = event.clientX;
+  let top  = event.clientY;
+
+  requestAnimationFrame(() => {
+    let left = event.clientX;
+    let top = event.clientY;
+    const margin = 10;
+    const w = tip.offsetWidth;
+    const h = tip.offsetHeight;
+    if (top + h > window.innerHeight - margin) {
+      top = window.innerHeight - h - margin;
+    }
+    if (left + w > window.innerWidth - margin) {
+      left = window.innerWidth - w - margin;
+    }
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  });
+}
+function moveTooltip(event){
+  const tip = document.getElementById("tooltip");
+  let left = event.clientX;
+  let top  = event.clientY;
+
+  requestAnimationFrame(() => {
+    let left = event.clientX;
+    let top = event.clientY;
+    const margin = 10;
+    const w = tip.offsetWidth;
+    const h = tip.offsetHeight;
+    if (top + h > window.innerHeight - margin) {
+      top = window.innerHeight - h - margin;
+    }
+    if (left + w > window.innerWidth - margin) {
+      left = window.innerWidth - w - margin;
+    }
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  });
+}
+function hideTooltip(){
+  document.getElementById("tooltip").style.display = "none";
+}
+
+function log(text) {
+  const logElement = document.getElementById("log");
+  logElement.innerText = text + "\n" + logElement.innerText;
+}
+
+function goStraight(){
+  log("Moved north");
+  position.y += 1;
+  move();
+}
+function goLeft(){
+  log("Moved west");
+  position.x -= 1;
+  move();
+}
+function goRight(){
+  log("Moved east");
+  position.x += 1;
+  move();
+}
+function goDown(){
+  log("Moved south");
+  position.y -= 1;
+  move();
+}
+function move(){
+  play(moveSound);
+  document.getElementById("position").innerHTML = `(${position.x},${position.y})`;
+  const rewBox = document.getElementById("rewardBox");
+  rewBox.style.display = "none";
+  if(cReward){
+  cReward.style.display = "none";
+  cReward = null;
+  }
+  if(speakingNPC){
+  speakingNPC.style.display = "none";
+  speakingNPC = null;
+  }
+  const EventUI = document.getElementsByClassName("eventUI");
+  for(let eventUI of EventUI){
+    eventUI.style.display = "none";
+    eventUI.remove();
+  }
+  hideTooltip();
+  const NPC = document.getElementById("NPC");
+  NPC.style.display = "none";
+  const reward_ = rewardList.find(r => {return (r.x === position.x && r.y === position.y)})
+  if (reward_){
+    showTreasureBox(reward_);
+  }
+  if(isOccupiedEnemy(position.x,position.y)){
+    const enemy = enemies.find(e => {return (e.x === position.x && e.y === position.y)});
+    battle(enemy.kind);
+    combatEnemy = enemies.indexOf(enemy);
+  }
+  else if(isOccupiedEvent(position.x,position.y)){
+    const event = randomEvents.find(e => {return (e.x === position.x && e.y === position.y)});
+    encounterEvent(event);
+  }
+
+  const up = document.getElementsByClassName("direction")[0];
+  const left = document.getElementsByClassName("direction")[1];
+  const right = document.getElementsByClassName("direction")[2];
+  const down = document.getElementsByClassName("direction")[3];
+
+  const upButton = document.getElementsByClassName("directionButton")[0];
+  const leftButton = document.getElementsByClassName("directionButton")[1];
+  const rightButton = document.getElementsByClassName("directionButton")[2];
+  const downButton = document.getElementsByClassName("directionButton")[3];
+
+  if(position.y + 1 > mapHeight.max){
+    upButton.style.display = "none";
+  }
+  else{
+    upButton.style.display = "block";
+  }
+  if(position.y - 1 < mapHeight.min){
+    downButton.style.display = "none";
+  }
+  else{
+    downButton.style.display = "block";
+  }
+  if(position.x + 1 > mapWidth.max){
+    rightButton.style.display = "none";
+  }
+  else{
+    rightButton.style.display = "block";
+  }
+  if(position.x - 1 < mapWidth.min){
+    leftButton.style.display = "none";
+  }
+  else{
+    leftButton.style.display = "block";
+  }
+
+  if(isOccupiedEnemy(position.x,position.y + 1)){
+    up.textContent = "!";
+    up.classList.add("glow");
+  }
+  else if(isOccupiedEvent(position.x,position.y + 1)){
+    up.textContent = "?";
+    up.classList.add("glow");
+  }
+  else{
+    up.textContent = "";
+    up.classList.remove("glow");
+  }
+  if(isOccupiedEnemy(position.x - 1,position.y)){
+    left.textContent = "!";
+    left.classList.add("glow");
+  }
+  else if(isOccupiedEvent(position.x - 1,position.y)){
+    left.textContent = "?";
+    left.classList.add("glow");
+  }
+  else{
+    left.textContent = "";
+    left.classList.remove("glow");
+  }
+  if(isOccupiedEnemy(position.x + 1,position.y)){
+    right.textContent = "!";
+    right.classList.add("glow");
+  }
+  else if(isOccupiedEvent(position.x + 1,position.y)){
+    right.textContent = "?";
+    right.classList.add("glow");
+  }
+  else{
+    right.textContent = "";
+    right.classList.remove("glow");
+  }
+  if(isOccupiedEnemy(position.x,position.y - 1)){
+  down.textContent = "!";
+  down.classList.add("glow");
+  }
+  else if(isOccupiedEvent(position.x,position.y - 1)){
+  down.textContent = "?";
+  down.classList.add("glow");
+  }
+  else{
+  down.textContent = "";
+  down.classList.remove("glow");
+  }
+}
+
+
+areaSetting();
+function areaSetting(){
+  document.documentElement.style.setProperty("--main-bg", area.bColor);
+  document.documentElement.style.setProperty("--main-text", area.mColor);
+  document.documentElement.style.setProperty("--sub-text", area.sColor);
+  document.getElementById("drawPile").textContent = drawPile.length;
+  position.x = 0;
+  position.y = 0;
+  playerHP = maxHP;
+  enemies = [];
+  randomEvents = [];
+  document.getElementById("areaName").textContent = area.name;
+  
+  for (let i = 0; i <100; i++) {
+    spawnEnemy();
+  }
+
+  spawnEvent();
+}
+
+function spawnEnemy(){
+  let totalWeight = 0;
+  let index;
+  monsters[area.name].forEach(monster => {
+    totalWeight += monster.PROB;
+  });
+  let r = Math.floor(Math.random() * totalWeight);
+
+  for (let i = 0; i <monsters[area.name].length; i++) {
+    if (r < monsters[area.name][i].PROB) {
+      index = i;
+      break;
+    }
+
+    r -= monsters[area.name][i].PROB;
+  }
+
+  let x, y;
+  do{
+    x = Math.floor(Math.random() * (mapWidth.max + 1 - mapWidth.min)) + mapWidth.min;
+    y = Math.floor(Math.random() * (mapHeight.max + 1 - mapHeight.min)) + mapWidth.min;
+  }while((x === 0 && y === 0) || isOccupiedEnemy(x,y) || isOccupiedEvent(x,y));
+    const enemy = {
+    kind: index,
+    x: x,
+    y: y,
+  };
+  enemies.push(enemy);
+}
+
+function spawnEvent(){
+  for (let i = 0; i < events.length; i++){
+    const s = events[i].min;
+    for (let j = 0; j < s; j++){
+        _spawnEvent({...events[i]});
+    }
+    const t = Math.floor(Math.random() * (events[i].max  + 1 - events[i].min));
+    for (let j = 0; j < t; j++){
+      if(Math.random() < events[i].PROB / 100){
+        _spawnEvent({...events[i]});
+      }
+    }
+  }
+}
+function _spawnEvent(_event){
+  let x, y;
+  do{
+    x = Math.floor(Math.random() * (mapWidth.max + 1 - mapWidth.min)) + mapWidth.min;
+    y = Math.floor(Math.random() * (mapHeight.max + 1 - mapHeight.min)) + mapWidth.min;
+  }while((x === 0 && y === 0) || isOccupiedEnemy(x,y) || isOccupiedEvent(x,y));
+    const randomEvent = {
+    type: _event.type,
+    name: _event.name,
+    x: x,
+    y: y,
+    mapPROB: _event.mapPROB,
+    isMap: false
+  };
+  randomEvents.push(randomEvent);
+}
+
+function isOccupiedEnemy(x, y){
+  return enemies.some(e => e.x === x && e.y === y) 
+}
+function isOccupiedEvent(x, y){
+  return randomEvents.some(e => e.x === x && e.y === y) 
+}
+
+function battle(index) {
+  isCombat = true;
+  turn = 0;
+  attackCount = 0;
+  drawPile = [...deck];
+  cEnemy = {content:[], COIN: monsters[area.name][index].COIN, REW: monsters[area.name][index].REW};
+  const enemyContent = monsters[area.name][index].content;
+  for (let enemy of enemyContent){
+    const enemyData = {...enemy, cHP:enemy.HP, block: 0, status: [], stats:{}, finalStats:{}};
+    cEnemy.content.push(enemyData);
+  }
+  
+  document.getElementById("choices").style.display = "none";
+  document.getElementById("positionUI").style.display = "none";
+  const enemyArea = document.getElementById("enemyArea");
+  for(let enemy of cEnemy.content){
+    const enemyStatus = document.createElement("div");
+    enemyStatus.className = "enemyStatus";
+    const enemyHPBarBorder = document.createElement("div");
+    enemyHPBarBorder.className = "enemyHPBarBorder";
+    const enemyHPBar = document.createElement("div");
+    enemyHPBar.className = "enemyHPBar";
+    const enemyName = document.createElement("div");
+    enemyName.className = "enemyName";
+    const enemyInfo = document.createElement("div");
+    enemyInfo.className = "enemyInfo";
+    const enemyAction = document.createElement("div");
+    enemyAction.className = "enemyAction";
+    const enemyState = document.createElement("div");
+    enemyState.className = "enemyState";
+    enemyHPBarBorder.appendChild(enemyHPBar);
+    enemyStatus.appendChild(enemyName);
+    enemyStatus.appendChild(enemyInfo);
+    enemyStatus.appendChild(enemyHPBarBorder);
+    enemyStatus.appendChild(enemyAction);
+    enemyStatus.appendChild(enemyState);
+    enemyArea.appendChild(enemyStatus);
+    enemyName.innerHTML = `${enemy.name}`;
+
+    enemyName.addEventListener("click", function(){
+      activeEnemy = enemy;
+      update();
+      characterReInfo();
+    })
+    enemyName.addEventListener("mouseover", function(event){
+      enemyName.classList.add("glow");
+      const enemyInfo = 
+      `${enemy.name}
+      ATK: ${enemy.finalStats.ATK}
+      DEF: ${enemy.finalStats.DEF}
+      SPD: ${enemy.finalStats.SPD}`;
+      showTooltip(enemyInfo,event);
+    })
+    enemyName.addEventListener("mousemove", function(event){
+      moveTooltip(event);
+    })
+    enemyName.addEventListener("mouseout", function(){
+      enemyName.classList.remove("glow");
+      hideTooltip();
+    })
+    enemyStatus.style.maxWidth = enemy.HP + "px";
+    if(enemy.HP <= enemyStatus.offsetWidth){
+      enemyStatus.style.width = enemy.HP + "px";;
+    }
+
+  }
+  activeEnemy = cEnemy.content[0];
+  // if(cEnemy.HP <= 700){
+  // document.getElementById("enemyHPBarBorder").style.width = `${cEnemy.HP}px`;
+  // }
+  // else{
+  //   document.getElementById("enemyHPBarBorder").style.width = `700px`;
+  // }
+
+  const ui = document.getElementsByClassName("battleUI");
+  for(let i = 0; i < ui.length; i++){
+    ui[i].style.display = "block";
+  }
+
+  update();
+  playerTurn();
+  characterReInfo();
+}
+
+function drawCards(n){
+  if(!isCombat) return;
+  hand = [];
+  document.getElementById("drawPile").textContent = drawPile.length;
+  const board = document.getElementById("board");
+  for (let i = 0; i < n; i++){
+    
+    if(drawPile.length == 0){
+      drawPile = [...deck];
+    }
+    const x = Math.floor(Math.random() * drawPile.length);
+
+    hand.push(drawPile[x]);
+    drawPile.splice(x, 1);
+
+  }
+  for (let i = 0; i < n; i++){
+    const card = document.createElement("div");
+    const cardName = document.createElement("div");
+    const cardDescription = document.createElement("div");
+    const cardCost = document.createElement("div");
+    card.className = "card";
+    card.style.pointerEvents = "none";
+    cardName.className = "cardName";
+    cardDescription.className = "cardDescription";
+    cardCost.className = "cardCost";
+    card.classList.add("draw");
+    card.style.animationDelay = `${i * 0.15}s`;
+    
+    const skill = hand[i];
+    cardName.textContent = `${skill.name}`;
+    cardDescription.innerHTML = `${skill.description}`;
+    cardCost.textContent = `${skill.AP}`;
+    card.appendChild(cardDescription);
+    card.appendChild(cardName);
+    card.appendChild(cardCost);
+    board.appendChild(card);
+    
+    const drawPileCardNum = document.getElementById("drawPile");
+
+    card.addEventListener("animationstart", (e)=>{
+      if (e.animationName === "draw"){
+        if(Number(drawPileCardNum.textContent) != 0){
+          drawPileCardNum.textContent = Number(drawPileCardNum.textContent) - 1;
+        }
+        else{
+          drawPileCardNum.textContent = deck.length - 1;
+        }
+
+      }
+    });
+    card.addEventListener("animationstart", (e)=>{
+      if (e.animationName === "draw"){
+        play(drawSound);
+      }
+    });
+    card.addEventListener("animationend", (e)=>{
+      if (e.animationName === "draw"){
+        card.classList.remove("draw");
+        card.style.animationDelay = "0s";
+        card.style.pointerEvents = "auto";
+      }
+      else if(e.animationName === "dispose" || e.animationName === "fly"){
+        card.remove();
+      }
+    });
+    card.addEventListener("click", function (){
+      if(isCombat){
+        usedSkill = skill;
+        useSkill(card);
+        play(clickSound);
+      }
+    }) 
+    card.addEventListener("mouseover", function (event) {
+    showTooltip(
+        `${skill.name}
+        ${skill.description}`,
+        event
+      );
+    if(isCombat){
+    card.classList.add("mouseOver");
+    if(playerAP >= skill.AP){
+      const normal = "▮".repeat(playerAP - skill.AP);
+      const glow   = "▮".repeat(skill.AP);
+      const empty  = "▯".repeat(finalStats.AP - playerAP);
+      document.getElementById("actionPoint").innerHTML =
+      normal +
+      `<span class="glow">${glow}</span>` +
+      empty;
+      }
+    }
+    });
+    card.addEventListener("mousemove", function (event){
+      moveTooltip(event);
+    });
+    card.addEventListener("mouseout", function (event){
+      hideTooltip();
+      card.classList.remove("mouseOver");
+      if(isCombat){
+      document.getElementById("actionPoint").innerHTML =  "▮".repeat(playerAP) + "▯".repeat(finalStats.AP - playerAP);
+      }
+    })
+  }
+}
+
+
+function showDrawPile(){
+  const cardsUI = document.getElementById("cardsUI");
+  cardsUI.style.display = "flex";
+  for (let skill of drawPile){
+    const card = document.createElement("div");
+    const cardName = document.createElement("div");
+    const cardDescription = document.createElement("div");
+    const cardCost = document.createElement("div");
+    card.className = "card";
+    card.style.pointerEvents = "none";
+    cardName.className = "cardName";
+    cardDescription.className = "cardDescription";
+    cardCost.className = "cardCost";
+
+    cardName.textContent = `${skill.name}`;
+    cardDescription.innerHTML = `${skill.description}`;
+    cardCost.textContent = `${skill.AP}`;
+
+    card.appendChild(cardDescription);
+    card.appendChild(cardName);
+    card.appendChild(cardCost);
+    cardsUI.appendChild(card);
+  }
+}
+
+function closeDrawPile(){
+  const cardsUI = document.getElementById("cardsUI");
+  cardsUI.innerHTML = `<button class="closeButton" onclick="closeDrawPile()">×</button>`;
+  cardsUI.style.display = "none";
+}
+
+function checkCardCost(){
+  const cardCosts = document.getElementsByClassName("cardCost");
+  for (let cardCost of cardCosts){
+    if(Number(cardCost.textContent) <= playerAP){
+      cardCost.classList.add("active");
+      cardCost.parentElement.classList.add("active");
+    }
+    else{
+      cardCost.classList.remove("active");
+      cardCost.parentElement.classList.remove("active");
+    }
+  }
+}
+
+async function attack(effect, card) {
+  for (let i = 1; i <= (effect.CHN || 1) ; i++)
+  { 
+    attackCount ++;
+    if((attackCount + 1) % 3 == 0 && Ritsu){
+      finalStats.CRT = 100;
+      characterReInfo()
+    }
+    const p = finalStats.ACC / activeEnemy.SPD;
+    if(Math.random() <= p){
+    let modATK = (cWeapon[0].ATK * (100 + getStats("magATK")) / 100 * normalDistribution(10));
+    modATK = modATK * effect.mag / 100;
+    if(Math.random() <= (finalStats.CRT / 100))
+    {
+      modATK = (modATK * (100 + finalStats.CRD) / 100);
+      play(criticalSound);
+    }
+
+    if(Math.random() <= (finalStats.BLE / 100))
+    {
+      const debuff = {
+        name: "Bleeding",
+        type: "damage",
+        description: `deal ${Math.floor(modATK / 10)} damage every turn.`,
+        TRN: 3,
+        value: Math.floor(modATK / 10)
+      }
+      activeEnemy.status.push(debuff);
+    }
+     if(Math.random() <= (finalStats.STN / 100))
+    {
+      const debuff = {
+        name: "Stun",
+        type: "stun",
+        description: `Unable to act.`,
+        TRN: 1,
+        value: modATK
+      }
+      activeEnemy.status.push(debuff);
+    }
+
+    let damage = calcDamage(modATK);
+
+    if(activeEnemy.block >= damage){
+    activeEnemy.block -= damage;
+    log("You dealt 0 damage");
+    }
+    else{
+    activeEnemy.cHP -= (damage - activeEnemy.block);
+    log("You dealt " + (damage - activeEnemy.block) + " damage");
+    activeEnemy.block = 0;
+    }
+    
+    shake();
+    play(attackSound);
+    }
+    else{
+    log("Your attack missed");
+    play(attack2Sound);
+    }
+  await wait(200);
+    update();
+  }
+  checkGame();
+}
+function getStats(key){
+  return stats[key] || 0;
+}
+function getEnemyStats(enemy, key){
+  return enemy.stats[key] || 0;
+}
+function calcDamage(ATK){
+  let damage = 0;
+  let sum_con = getStats("conFIR") + getStats("conICE") + getStats("conLTN") + getStats("conACD");
+  if(sum_con < 100){
+    sum_con = 100;
+  }
+  FIR_flat = ATK * (getStats("conFIR") / sum_con);
+  ICE_flat = ATK * (getStats("conICE") / sum_con);
+  LTN_flat = ATK * (getStats("conLTN") / sum_con);
+  ACD_flat = ATK * (getStats("conACD") / sum_con);
+  PSC_flat = ATK - (FIR_flat + ICE_flat + LTN_flat + ACD_flat);
+
+  magPSC = 100 + getStats("magPSC");
+  magFIR = 100 + getStats("magFIR");
+  magICE = 100 + getStats("magICE");
+  magLTN = 100 + getStats("magLTN");
+  magACD = 100 + getStats("magACD");
+
+  PSC = Math.floor(PSC_flat * magPSC / 100)
+  FIR = Math.floor(FIR_flat * magFIR / 100)
+  ICE = Math.floor(ICE_flat * magICE / 100)
+  LTN = Math.floor(LTN_flat * magLTN / 100)
+  ACD = Math.floor(ACD_flat * magACD / 100)
+  damage = PSC + FIR + ICE + LTN + ACD;
+
+  return (damage);
+}
+
+function block(effect, card) {
+  gainedBlock += playerBlock * effect.mag/100;
+  play(blockSound);
+  update();
+}
+
+function buff(effect, card) {
+  const buff = {...effect};
+  buffs.push(buff)
+  play(buffSound);
+  weaponUpdate();
+  characterUpdate();
+  update();
+}
+
+function debuff(effect, card) {
+  const debuff = {...effect};
+  activeEnemy.status.push(debuff);
+  play(debuffSound);
+  update();
+}
+
+function draw(effect, card){
+  drawCards(effect.value);
+  checkCardCost();
+  update();
+}
+
+function normalDistribution(accuracy){
+	var x = Math.random();
+	var y = Math.random();
+	
+	var z1 = 1 + Math.sqrt(-2*Math.log(x))*Math.cos(2 * Math.PI  * y)* accuracy/100;
+
+	return z1;
+}
+
+function useSkill(card) {
+  if (playerAP < usedSkill.AP) {
+    log("Not enough AP");
+    play(errorSound);
+    return;
+  }
+  playerAP -= usedSkill.AP;
+  checkCardCost()
+
+  card.style.pointerEvents = "none";
+  const center = document.getElementById("center-area");
+  card.style.animationDelay = `0s`;
+  card.classList.add("play");
+
+  for(let effect of usedSkill.effects){
+    const type = effect.type;
+    setTimeout(() => {
+    if(!isCombat) return;
+    switch(type){
+      case("attack"):
+        attack(effect, card)
+      break;
+      case("block"):
+        block(effect, card);
+      break;
+      case("buff"):
+        buff(effect, card);
+      break;
+      case("debuff"):
+        debuff(effect, card);
+      break;
+      case("draw"):
+        draw(effect, card);
+      break;
+
+    }
+    card.classList.remove("play");
+    card.classList.add("dispose");
+    }, 400);
+  }
+    
+}
+
+async function turnEnd(){
+  document.getElementById("endTurnButton").classList.add("pressed");
+  const cards = document.getElementsByClassName("card");
+  let i = 0
+  for (let card of cards){
+    card.style.animationDelay = `${i * 0.15}s`;
+    card.classList.add("dispose");
+    i++;
+  }
+  for (let debuff of debuffs){
+    if(debuff.type === "damage"){
+      let damage = debuff.value;
+      if(gainedBlock >= damage){
+      gainedBlock -= damage;
+      }
+      else{
+      playerHP -= (damage - gainedBlock);
+      log("got "+ (damage - gainedBlock) + " damage");
+      gainedBlock = 0;
+      }
+    }
+  }
+  bigText("Enemy's Turn", 800);
+  for (let enemy of cEnemy.content){
+    await wait(1300);
+    enemyTurn(enemy);
+    update();
+    checkGame();
+  }
+  await wait(500);
+  if(cEnemy.content.length > 0){
+    cEnemy.content.forEach(enemy => {enemyTurnEnd(enemy);});
+    playerTurn();
+  }
+}
+function enemyTurn(enemy) {
+  if (enemy.cHP <= 0) return;
+
+  enemy.stats = mergeMods(...debuffs.map(buff => buff.mods));
+
+  debuffs.forEach(debuff => debuff.TRN --);
+  debuffs = debuffs.filter(debuff => debuff.TRN > 0);
+
+  let stun = false;
+  for (let debuff of enemy.status){
+    if(debuff.type === "stun"){
+      stun = true;
+    }
+  }
+
+  if(!stun){
+    const acts = enemy.pattern[enemy.step];
+
+    acts.forEach(act=>{
+      actions[act.type](enemy, act, false);
+    });
+
+    enemy.step++;
+    if(enemy.step >= enemy.pattern.length){
+      enemy.step = 0;
+    }
+  }
+  update();
+  characterUpdate();
+
+}
+
+function enemyTurnEnd(enemy){
+  for (let debuff of enemy.status){
+    if(debuff.type === "damage"){
+      let damage = debuff.value;
+      if(enemy.block >= damage){
+      enemy.block -= damage;
+      }
+      else{
+      enemy.cHP -= (damage - enemy.block);
+      enemy.block = 0;
+      }
+    }
+  }
+  enemy.status.forEach(buff => buff.TRN --);
+  enemy.status = enemy.status.filter(buff => buff.TRN > 0);
+  checkGame();
+}
+const actions = {
+  Attack(enemy, data, set){
+    if(set){
+    data.value = Math.floor(normalDistribution(data.sd) * (enemy.finalStats.ATK * data.rate));
+    }
+    else{
+      enemyAttack(enemy, data.value);
+      play(attackSound);
+    }
+  },
+  Block(enemy, data, set){
+    if(set){
+      data.value =  Math.floor(normalDistribution(data.sd) * (enemy.finalStats.DEF * data.rate));
+    }
+    else{
+      enemyGuard(enemy, data.value);
+      play(blockSound);
+    }
+  },
+  DamageDebuff(enemy, data, set){
+    if(set){
+      //data.value =  Math.floor(normalDistribution(data.sd) * (enemy.finalStats.ATK * data.rate));
+    }
+    else{
+      enemyDamageDebuff(enemy, data);
+      play(debuffSound);
+    }
+  },
+  None(enemy, data, set){}
+};
+
+function enemyAttack(enemy, value){
+  shake();
+  if(gainedBlock >= value){
+  gainedBlock -= value;
+  log(enemy.name + " dealt 0 damage");
+  }
+  else{
+  playerHP -= (value - gainedBlock);
+  log(enemy.name + " dealt "+ (value - gainedBlock) + " damage");
+  gainedBlock = 0;
+  }
+}
+function enemyGuard(enemy, value){
+  enemy.block = value;
+}
+function enemyDamageDebuff(enemy, data){
+  const debuff = {
+    name: data.name ?? data.type,
+    type: "damage",
+    description: `deal ${data.value} damage every turn.`,
+    TRN: 3,
+    value: data.value,
+  }
+  debuffs.push(debuff);
+}
+
+function playerTurn(){
+  bigText("Your Turn", 800);
+  turn ++;
+  drawCards(6);
+  document.getElementById("endTurnButton").classList.remove("pressed");
+
+  for(let i = 0; i < cEnemy.content.length ;i++){
+    document.getElementsByClassName("enemyAction")[i].innerText = '';
+    const enemy = cEnemy.content[i];
+    const acts = enemy.pattern[enemy.step];
+    acts.forEach(act=>{
+      actions[act.type](enemy, act, true);
+      document.getElementsByClassName("enemyAction")[i].innerText +=
+      `=> ${act.name ?? act.type} ${act.value != null ? ` ${act.value}` : ""}\n`;
+    });
+  }
+  
+
+  gainedBlock = 0;
+  
+  
+  // for (let buff of buffs){
+  //   buff.TRN -= 1;
+  //   if(buff.TRN <= 0){
+  //     buffs.splice(buffs.indexOf(buff),1);
+  //   } 
+  // }
+  buffs.forEach(buff => buff.TRN --);
+  buffs = buffs.filter(buff => buff.TRN > 0);
+  characterUpdate();
+  playerAP = finalStats.AP;
+
+  checkCardCost()
+  update();
+}
+
+function checkGame() {
+  for(let i = 0; i < cEnemy.content.length; i++){
+    if(cEnemy.content[i].cHP <= 0){
+    document.getElementsByClassName("enemyStatus")[i].remove();
+    if(activeEnemy === cEnemy.content[i]){
+      activeEnemy = cEnemy.content.filter(e => e.cHP > 0)[0] ?? null;
+    }
+    }
+  }
+  cEnemy.content = cEnemy.content.filter(enemy => enemy.cHP > 0);
+  if (playerHP <= 0) {
+    log("You lose")
+    isCombat = false;
+    reset();
+  } else if (cEnemy.content.length == 0) {
+    log("You win");
+    isCombat = false;
+    gainedBlock = 0;
+    drawPile = [...deck];
+    enemies.splice(combatEnemy,1);
+    buffs = [];
+    debuffs = [];
+      document.getElementById("choices").style.display = "block";
+      const ui = document.getElementsByClassName("battleUI");
+    for(let i = 0; i < ui.length; i++){
+      ui[i].style.display = "none";
+    }
+    document.getElementById("enemyArea").innerHTML = "";
+    document.getElementById("positionUI").style.display = "flex";
+    const cards = document.getElementsByClassName("card");
+    for (let card of cards){
+      card.classList.add("dispose");
+    }
+    createTreasureBox("Reward", cEnemy.Tier, cEnemy.COIN, cEnemy.REW[0], cEnemy.REW[1], cEnemy.REW[2], cEnemy.REW[3],);
+    document.getElementById("drawPile").textContent = drawPile.length;
+    update();
+    characterUpdate();
+  }
+}
+
+function weaponUpdate() {
+  
+  const weaponUI = document.getElementsByClassName("itemUI")[0];
+  weaponUI.textContent = ""
+  cWeapon.forEach(e => {weaponUI.innerHTML += `${e.name}&nbsp;`});
+  weaponUI.addEventListener("mouseover", function (event) {
+    weaponTooltip(cWeapon, event);
+  });
+  weaponUI.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  weaponUI.addEventListener("mouseout", function (event){
+    hideTooltip();
+  });
+}
+
+function characterUpdate() {
+  stats = mergeMods(...cWeapon.map(e => e.mods), cArmor.mods, ...buffs.map(buff => buff.mods));
+  calcDamage(cWeapon[0].ATK * (100 + getStats("magATK")) / 100);
+  finalStats = {
+    HP: Math.floor(maxHP * (100 + getStats("magHP")) / 100),
+    AP: Math.floor(maxAP + getStats("addAP")),
+    PSC: Math.floor(PSC_flat * (100 + getStats("magPSC")) / 100),
+    FIR: Math.floor(FIR_flat * (100 + getStats("magFIR")) / 100),
+    ICE: Math.floor(ICE_flat * (100 + getStats("magICE")) / 100),
+    LTN: Math.floor(LTN_flat * (100 + getStats("magLTN")) / 100),
+    ACD: Math.floor(ACD_flat * (100 + getStats("magACD")) / 100),
+    CRT: Math.floor(cWeapon[0].CRT * (100 + getStats("magCRT")) / 100),
+    CRD: Math.floor(cWeapon[0].CRD * (100 + getStats("magCRD")) / 100),
+    ACC: Math.floor(cWeapon[0].ACC * (100 + getStats("magACC")) / 100),
+    DEF: Math.floor(cArmor.DEF * (100 + getStats("magDEF")) / 100),
+    BLE: Math.floor(getStats("BLE") * (100 + getStats("magBLE")) / 100),
+    STN: Math.floor(getStats("STN")* (100 + getStats("magSTN")) / 100),
+  }
+  
+  cWeapon.some(g => g.name === "律")? Ritsu = true: false;
+  cWeapon.some(g => g.name === "猛")? Moh = true: false;
+
+  characterReInfo();
+}
+
+function characterReInfo(){
+  let total = calcDamage(cWeapon[0].ATK * (100 + getStats("magATK")) / 100);
+  const character = document.getElementById("characterStatus");
+  const weaponName = cWeapon.map(w => w.name).join(" ");
+  character.innerHTML = 
+  `Player
+  HP: ${finalStats.HP} AP: ${finalStats.AP}
+
+  ${weaponName}
+  ATK: ${Math.floor(cWeapon[0].ATK)} × ${Math.floor(100 + getStats("magATK")) / 100} = ${Math.floor(cWeapon[0].ATK * (100 + getStats("magATK")) / 100)}
+  &nbsp;&nbsp;PSC: ${Math.floor(PSC_flat)} × ${Math.floor(100 + getStats("magPSC")) / 100} = ${Math.floor(finalStats.PSC)}
+  &nbsp;&nbsp;<span class="fir">FIR: ${Math.floor(FIR_flat)} × ${Math.floor(100 + getStats("magFIR")) / 100} = ${Math.floor(finalStats.FIR)} </span>
+  &nbsp;&nbsp;<span class="ice">ICE: ${Math.floor(ICE_flat)} × ${Math.floor(100 + getStats("magICE")) / 100} = ${Math.floor(finalStats.ICE)} </span>
+  &nbsp;&nbsp;<span class="ltn">LTN: ${Math.floor(LTN_flat)} × ${Math.floor(100 + getStats("magLTN")) / 100} = ${Math.floor(finalStats.LTN)} </span>
+  &nbsp;&nbsp;<span class="acd">ACD: ${Math.floor(ACD_flat)} × ${Math.floor(100 + getStats("magACD")) / 100} = ${Math.floor(finalStats.ACD)} </span>
+  &nbsp;&nbsp;SUM: ${Math.floor(total)}
+  CRT: ${Math.floor(cWeapon[0].CRT)} × ${Math.floor(100 + getStats("magCRT")) / 100} = ${Math.floor(finalStats.CRT)}(%)
+  CRD: ${Math.floor(cWeapon[0].CRD)} × ${Math.floor(100 + getStats("magCRD")) / 100} = ${Math.floor(finalStats.CRD)}(%)
+  ACC: ${Math.floor(cWeapon[0].ACC)} × ${Math.floor(100 + getStats("magACC")) / 100} = ${Math.floor(finalStats.ACC)}
+  Chance to Hit: ${isCombat ? (finalStats.ACC >= activeEnemy.SPD ? "100%": Math.floor(finalStats.ACC / activeEnemy.SPD * 100) + "%") : ""}
+
+  ${cArmor.name}
+  DEF: ${Math.floor(cArmor.DEF)} × ${Math.floor(100 + getStats("magDEF")) / 100} = ${Math.floor(finalStats.DEF)}
+  `
+}
+
+function armorUpdate() {
+  playerBlock = cArmor.DEF;
+  const armorUI = document.getElementsByClassName("itemUI")[1];
+  armorUI.textContent = cArmor.name;
+  armorUI.addEventListener("mouseover", function (event) {
+    armorTooltip(cArmor, event);
+  });
+  armorUI.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  armorUI.addEventListener("mouseout", function (event){
+    hideTooltip();
+  });
+}
+
+function weaponTooltip(weapon, event) {
+  const mods = weapon[0].mods || {};
+
+  const modLines = [
+    mods.magATK && `ATK +${mods.magATK}%`,
+    mods.magDEF && `ATK +${mods.magDEF}%`,
+
+    mods.conFIR && `<span class="fir">${mods.conFIR}% ATK converted to FIR</span>`,
+    mods.magFIR && `<span class="fir">FIR +${mods.magFIR}%</span>`,
+
+    mods.conICE && `<span class="ice">${mods.conICE}% ATK converted to ICE</span>`,
+    mods.magICE && `<span class="ice">ICE +${mods.magICE}%</span>`,
+
+    mods.conLTN && `<span class="ltn">${mods.conLTN}% ATK converted to LTN</span>`,
+    mods.magLTN && `<span class="ltn">LTN +${mods.magLTN}%</span>`,
+
+    mods.conACD && `<span class="acd">${mods.conACD}% ATK converted to ACD</span>`,
+    mods.magACD && `<span class="acd">ACD +${mods.magACD}%</span>`,
+
+    mods.magCRT && `CRT +${mods.magCRT}%`,
+    mods.magCRD && `CRD +${mods.magCRD}%`,
+    mods.magACC && `ACC +${mods.magACC}%`,
+
+    mods.magDEF && `DEF +${mods.magDEF}%`,
+    mods.magHP && `HP +${mods.magHP}%`,
+    mods.addAP && `AP +${mods.addAP}`
+  ].filter(Boolean);
+
+  const lines = [
+    weapon[0].name,
+    `ATK: ${weapon[0].ATK}`,
+    `CRT: ${weapon[0].CRT}% CRD: ${100 + weapon[0].CRD}%`,
+    `ACC: ${weapon[0].ACC}`,
+    ...modLines
+  ];
+
+  for(let i = 1; i < weapon.length; i++){
+    const glyphLines = [
+      `${weapon[i].name}: ${weapon[i].description}`,
+    ]
+    lines.push(...glyphLines);
+  }
+  showTooltip(lines.join("<br>"), event);
+}
+function armorTooltip(armor, event){
+  const mods = armor.mods || {};
+
+  const modLines = [
+    mods.magATK && `ATK +${mods.magATK}%`,
+    mods.magDEF && `ATK +${mods.magDEF}%`,
+
+    mods.conFIR && `<span class="fir">${mods.conFIR}% ATK converted to FIR</span>`,
+    mods.magFIR && `<span class="fir">FIR +${mods.magFIR}%</span>`,
+
+    mods.conICE && `<span class="ice">${mods.conICE}% ATK converted to ICE</span>`,
+    mods.magICE && `<span class="ice">ICE +${mods.magICE}%</span>`,
+
+    mods.conLTN && `<span class="ltn">${mods.conLTN}% ATK converted to LTN</span>`,
+    mods.magLTN && `<span class="ltn">LTN +${mods.magLTN}%</span>`,
+
+    mods.conACD && `<span class="acd">${mods.conACD}% ATK converted to ACD</span>`,
+    mods.magACD && `<span class="acd">ACD +${mods.magACD}%</span>`,
+
+    mods.magCRT && `CRT +${mods.magCRT}%`,
+    mods.magCRD && `CRD +${mods.magCRD}%`,
+    mods.magACC && `ACC +${mods.magACC}%`,
+
+    mods.magDEF && `DEF +${mods.magDEF}%`,
+    mods.magHP && `HP +${mods.magHP}%`,
+    mods.addAP && `AP +${mods.addAP}`
+  ].filter(Boolean);
+
+  const lines = [
+    armor.name,
+    `DEF: ${armor.DEF}`,
+    ...modLines
+  ];
+
+  showTooltip(lines.join("<br>"), event);
+}
+function randomWeapon(rew, tier) {
+  const newWeapon = random(weapons, tier);
+  const pre = random(prefixes, );
+  const suf = random(suffixes, );
+  newWeapon.name = `${pre.name} ${newWeapon.name} ${suf.name}`;
+  newWeapon.mods = mergeMods(newWeapon.mods, pre.mods, suf.mods);
+  dropWeapon(rew, [newWeapon]);
+}
+function randomArmor(rew, tier) {
+  const newArmor = random(armors, tier);
+  const pre = random(prefixes, );
+  const suf = random(suffixes, );
+  newArmor.name = `${pre.name} ${newArmor.name} ${suf.name}`;
+  newArmor.mods = mergeMods(newArmor.mods, pre.mods, suf.mods);
+  dropArmor(rew, newArmor);
+}
+function randomSkill(rew, tier) {
+  dropSkill(rew, random(skills, tier));
+}
+
+function random(List, tier){
+  const filteredList = tier? List.filter(e => (e.Tier >= tier - 1 && e.Tier <= tier + 1)) : List;
+  let totalWeight = 0;
+  filteredList.forEach(e => totalWeight += e.PROB);
+  let r = Math.floor(Math.random() * totalWeight);
+  for (let i = 0; i < List.length; i++) {
+    if (r < filteredList[i].PROB) {
+      const s = { ...filteredList[i] };
+      return(s)
+      break;
+    }
+    r -= filteredList[i].PROB;
+  }
+}
+
+function mergeMods(...sources){
+  const result = {};
+
+  sources.forEach(obj => {
+    for(const key in obj){
+      result[key] = (result[key] || 0) + obj[key];
+    }
+  });
+
+  return result;
+}
+
+function dropWeapon(rew, weapon){
+  const button = document.createElement("button");
+  const buttonWrap = document.createElement("div");
+  button.textContent = weapon.map(w => w.name).join(" ");
+  buttonWrap.classList.add("rewardItem");
+  buttonWrap.classList.add("buttonWrap");
+  button.classList.add("weaponButton");
+  rew.appendChild(buttonWrap);
+  buttonWrap.appendChild(button);
+
+  button.addEventListener("click", function () {
+  pickUpWeapon(rew, weapon, buttonWrap);
+  });
+  button.addEventListener("mouseover", function (event) {
+    weaponTooltip(weapon, event);
+  });
+  button.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  button.addEventListener("mouseout", function (event){
+    hideTooltip();
+  });
+}
+function dropArmor(rew, armor){
+  const button = document.createElement("button");
+  const buttonWrap = document.createElement("div");
+  button.textContent = armor.name;
+  buttonWrap.classList.add("rewardItem");
+  buttonWrap.classList.add("buttonWrap");
+  button.classList.add("armorButton");
+  rew.appendChild(buttonWrap);
+  buttonWrap.appendChild(button);
+
+  button.addEventListener("click", function () {
+  pickUpArmor(rew, armor, buttonWrap);
+  });
+  button.addEventListener("mouseover", function (event) {
+    armorTooltip(armor, event);
+    
+  });
+  button.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  button.addEventListener("mouseout", function (event){
+    hideTooltip();
+  });
+}
+function dropSkill(rew, skill){
+  const button = document.createElement("button");
+  const buttonWrap = document.createElement("div");
+  button.textContent = skill.name;
+  buttonWrap.classList.add("rewardItem");
+  buttonWrap.classList.add("buttonWrap");
+  button.classList.add("skillButton");
+  rew.appendChild(buttonWrap);
+  buttonWrap.appendChild(button);
+
+  button.addEventListener("click", function () {
+  pickUpSkill(rew, skill, buttonWrap);
+  });
+  button.addEventListener("mouseover", function (event) {
+  showTooltip(
+      `${skill.name}
+      ${skill.description}`,
+      event
+    );
+  });
+  button.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  button.addEventListener("mouseout", function (event){
+    hideTooltip();
+  })
+
+
+}
+
+function dropCoin(rew, n){
+  const coinBtn = document.createElement("button");
+  coinBtn.textContent = `${n} Coins`;
+  coinBtn.classList.add("rewardItem");
+  coinBtn.classList.add("coinButton");
+
+  coinBtn.onclick = function () {
+    collectCoins(n, this);
+  };
+
+  rew.appendChild(coinBtn);
+}
+
+
+function randomMap(rew){
+  let totalWeight = 0;
+  randomEvents.forEach(map => totalWeight += map.mapPROB);
+
+  let r = Math.floor(Math.random() * totalWeight);
+   for (let i = 0; i < randomEvents.length; i++) {
+    if (r < randomEvents[i].mapPROB) {
+      if(!randomEvents[i].isMap){
+        const map = randomEvents[i];
+        dropMap(rew, map);
+      }
+      break;
+    }
+    r -= randomEvents[i].mapPROB;
+  }
+
+}
+function dropMap(rew, map){
+  const button = document.createElement("button");
+  const buttonWrap = document.createElement("div");
+  button.textContent = `${map.name} map`;
+  buttonWrap.classList.add("rewardItem");
+  buttonWrap.classList.add("buttonWrap");
+  button.classList.add("mapButton");
+  rew.appendChild(buttonWrap);
+  buttonWrap.appendChild(button);
+
+  button.onclick = function () {
+    collectMap(buttonWrap, map);
+  };
+
+}
+
+function collectMap(btn, map){
+  const _map = document.createElement("div");
+  _map.textContent = `${map.name} (${map.x}, ${map.y})`;
+  const positionUI = document.getElementById("positionUI");
+  positionUI.appendChild(_map);
+  _map.addEventListener("click", function(){
+    _map.remove();
+  })
+  btn.remove();
+  log(`You got ${map} map`);
+  map.isMap = true;
+  update();
+}
+
+function pickUpWeapon(rew, newWeapon, btn) {
+  
+  dropWeapon(rew, cWeapon);
+  cWeapon = newWeapon;
+  log(`You equipped ${cWeapon[0].name}`);
+  weaponUpdate();
+  characterUpdate();
+  update();
+  btn.remove();
+}
+function pickUpArmor(rew, newArmor,btn) {
+  
+  dropArmor(rew, cArmor);
+  cArmor = newArmor;
+  magFIR_flat = cArmor.magFIR;
+  magICE_flat = cArmor.magICE;
+  magLTN_flat = cArmor.magLTN;
+  magACD_flat = cArmor.magACD;
+  log(`You equipped ${cArmor.name}`);
+  armorUpdate();
+  characterUpdate();
+  update();
+  btn.remove();
+}
+function pickUpSkill(rew, newSkill,btn) {
+  if(deck.length >= maxCard){
+  showDeck(newSkill,btn);
+  }
+  else{
+    deck.push(newSkill);
+    drawPile = [...deck];
+    btn.remove();
+    document.getElementById("drawPile").textContent = drawPile.length;
+  }
+}
+
+function showDeck(newSkill,btn){
+  const cardsUI = document.getElementById("cardsUI");
+  cardsUI.style.display = "flex";
+  for (let skill of deck){
+    const card = document.createElement("div");
+    const cardName = document.createElement("div");
+    const cardDescription = document.createElement("div");
+    const cardCost = document.createElement("div");
+    card.className = "card";
+    cardName.className = "cardName";
+    cardDescription.className = "cardDescription";
+    cardCost.className = "cardCost";
+
+    cardName.textContent = `${skill.name}`;
+    cardDescription.innerHTML = `${skill.description}`;
+    cardCost.textContent = `${skill.AP}`;
+
+    card.appendChild(cardDescription);
+    card.appendChild(cardName);
+    card.appendChild(cardCost);
+    cardsUI.appendChild(card);
+
+    card.addEventListener("click", function(){
+      deck.push(newSkill);
+      btn.remove();
+      deck.splice(deck.indexOf(skill),1);
+      dropSkill(cReward,skill);
+      this.remove();
+      drawPile = [...deck];
+      closeDeck();
+    })
+
+    card.addEventListener("mouseover", function (event){
+      card.classList.add("mouseOver");
+      card.classList.add("active")
+    })
+    card.addEventListener("mouseout", function (event){
+      card.classList.remove("mouseOver");
+      card.classList.remove("active");
+  })
+   
+  }
+}
+
+function closeDeck(){
+  const cardsUI = document.getElementById("cardsUI");
+  cardsUI.innerHTML = `<button class="closeButton" onclick="closeDrawPile()">×</button>`;
+  cardsUI.style.display = "none";
+}
+
+function showReward(){
+  const rewBox = document.getElementById("rewardBox");
+  rewBox.classList.remove("glow");
+  const reward = rewardList.find(r => {return (r.x === position.x && r.y === position.y)});
+  const rew = document.querySelector(`[data-id="${reward.id}"`);
+  cReward = rew;
+  rew.style.display="flex";
+}
+function closeReward(rew){
+  rew.style.display = "none";
+  hideTooltip();
+  if(rew.childElementCount == 1){
+    rewardList.splice(rewardList.indexOf(rewardList.find(r => {return (r.id === rew.dataset.id)})),1)
+    rew.remove();
+    const rewBox = document.getElementById("rewardBox");
+    rewBox.style.display = "none";
+  }
+}
+
+function createTreasureBox(name, tier, coin, p1, p2, p3, p4){
+  const rewBox = document.getElementById("rewardBox");
+  rewBox.style.display = "block";
+  rewBox.textContent = name;
+  rewBox.classList.add("glow");
+  const rew = document.createElement("div");
+  const close = document.createElement("button");
+  close.textContent = "×";
+  close.addEventListener("click", function (){
+    closeReward(rew);
+  })
+  close.classList.add("closeButton");
+  rewBox.parentElement.appendChild(rew);
+  rew.appendChild(close);
+  rew.classList.add("reward");
+  rew.style.display = "none";
+  dropCoin(rew, coin);
+  rew.dataset.id = `rew${rewardList.length}`;
+  if (Math.random() < p1/100) {
+  randomWeapon(rew, tier);
+  }
+  if (Math.random() < p2/100) {
+  randomArmor(rew, tier);
+  }
+  if (Math.random() < p3/100) {
+  randomSkill(rew, tier);
+  }
+  if (Math.random() < p4/100){
+    randomMap(rew);
+  }
+  const reward = {
+    id: `${rew.dataset.id}`,
+    name: name,
+    x: position.x,
+    y: position.y
+  }
+  rewardList.push(reward);
+  
+}
+
+function showTreasureBox(rew){
+  const rewBox = document.getElementById("rewardBox");
+  rewBox.style.display = "block";
+  rewBox.textContent = rew.name;
+}
+
+function encounterEvent(_event){
+  switch (_event.type){
+    case "TreasureBox":
+    const reward_ = rewardList.find(r => {return (r.x === position.x && r.y === position.y)});
+    if (reward_){
+    showTreasureBox(reward_);
+    }
+    else{
+    createTreasureBox(_event.name, 1, 10, 80, 80, 80, 10);
+    } 
+    break;
+
+    case "NPC":
+    const NPC_ = NPCList.find(r => {return (r.x === position.x && r.y === position.y)});
+    if (NPC_){
+    const spk = document.querySelector(`[data-id="${NPC_.id}"`);
+    speakingNPC = spk;
+    showNPC();
+    }
+    else{
+    createNPC(_event.name);
+    } 
+    break;
+
+    case "Portal":
+      showPortal();
+    break;
+  }
+}
+
+function createNPC(name){
+  const NPC = document.getElementById("NPC");
+  NPC.style.display = "block";
+  NPC.textContent = "Speak to " + name;
+  const spk = document.createElement("div");
+  const close = document.createElement("button");
+  close.textContent = "×";
+  close.addEventListener("click", function (){
+    closeSpkUI(spk);
+  })
+  speakingNPC = spk;
+  close.classList.add("closeButton");
+  NPC.parentElement.appendChild(spk);
+  spk.appendChild(close);
+  spk.classList.add("spkUI");
+  spk.style.display = "none";
+  spk.dataset.id = `NPC${NPCList.length}`;
+  const thisNPC = {
+    id: `${spk.dataset.id}`,
+    name: name,
+    x: position.x,
+    y: position.y
+  }
+  NPCList.push(thisNPC);
+  
+  if(thisNPC.name == "Smith"){
+   for(let i = 0; i < 3; i++){ 
+  const button = document.createElement("button");
+  let glyph;
+  let totalWeight = 0;
+  glyphs.forEach(glyph => totalWeight += glyph.PROB);
+  let r = Math.floor(Math.random() * totalWeight);
+   for (let i = 0; i < glyphs.length; i++) {
+    if (r < glyphs[i].PROB) {
+      glyph = { ...glyphs[i] };
+      break;
+    }
+    r -= glyphs[i].PROB;
+  }
+  button.classList.add("glyphOnSale");
+  button.innerHTML = 
+  `<div class="glyphOnSaleTop">Enchant your weapon</div>
+  <div class="glyphOnSaleCenter">${glyph.name}<br>[ ${glyph.read} ] </div>
+  <div class="glyphOnSaleBottom">Coin: ${glyph.CST}</div>`;
+
+  button.addEventListener("click", function () {
+  if(coin >= glyph.CST){
+    if(!cWeapon.some(_glyph => _glyph.name === glyph.name)){
+      if((cWeapon.length - 1) < cWeapon[0].SLT){
+      cWeapon.push(glyph);
+      enchant(glyph);
+      button.classList.add("sold");
+      }
+      else{
+        log("You cannot enchant any more");
+      }
+    }
+    else{
+      log("You cannot enchant same Glyph");
+    }
+  }
+  else{
+    log("Not enough coin");
+  }
+  });
+  button.addEventListener("mouseover", function (event) {
+    button.classList.add("mouseOver");
+  document.getElementsByClassName("itemUI")[0].innerHTML += `<div class="glow"> ${glyph.name} </div>`;
+  showTooltip(
+      glyph.description,
+      event
+    );
+  });
+  button.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  button.addEventListener("mouseout", function (event){
+    button.classList.remove("mouseOver");
+    hideTooltip();
+    const weaponUI = document.getElementsByClassName("itemUI")[0];
+    weaponUI.textContent = ""
+    cWeapon.forEach(e => {weaponUI.innerHTML += `${e.name}&nbsp;`});
+    
+  })
+  spk.appendChild(button);
+  }
+  }
+}
+function showNPC(){
+  const NPC = document.getElementById("NPC");
+  NPC.style.display = "block";
+}
+function speakNPC(){
+  speakingNPC.style.display = "flex";
+}
+function closeSpkUI(spk){
+  spk.style.display = "none";
+  hideTooltip();
+}
+function collectCoins(n,btn){
+  coin += n;
+  btn.remove();
+  log(`You got ${n} coin`);
+  update();
+}
+
+function enchant(glyph){
+  coin -= glyph.CST;
+
+  weaponUpdate();
+  characterUpdate();
+  update();
+}
+
+function buttonMouseOver(btn){
+  btn.classList.add("mouseOver");
+}
+function buttonMouseOut(btn){
+  btn.classList.remove("mouseOver");
+}
+
+function shake(){
+  const center = document.getElementById("center-area");
+  center.classList.add("shake");
+  center.addEventListener("animationend", function(a){
+    if(a.animationName === "screenShake"){
+    center.classList.remove("shake");
+    }
+  })
+}
+function reset() {
+  playerHP = maxHP;
+  playerAP = maxAP;
+  update();
+}
+
+function showPortal(){
+  const center = document.getElementById("center-area");
+  const portal = document.createElement("div");
+  portal.innerText = "Portal";
+  portal.className = "portal eventUI";
+  portal.addEventListener("click", function(){
+    shiftArea();
+    portal.remove();
+  })
+  center.appendChild(portal);
+}
+async function shiftArea(){
+
+  const fade = document.getElementById("fadeScreen");
+  fade.style.opacity = "1";
+  setTimeout(() => {
+    fade.style.opacity = "0";
+  }, 1000);
+  await wait(600);
+
+  area = {...areas[area.id]};
+  
+  areaSetting();
+  bigText(area.name, 1500);
+  move();
+}
+
+function bigText(text, dur){
+  const bigText = document.getElementById("bigText");
+  bigText.textContent = text;
+  bigText.style.opacity = "1";
+  setTimeout(() => {
+    bigText.style.opacity = "0";
+  }, dur);
+}
+
+function play(sound){
+  // const s = sound.cloneNode();
+  // s.play();
+}
+
+
+move();
+weaponUpdate();
+characterUpdate();
+armorUpdate();
+update();
+</script>
+
+</body>
+</html>

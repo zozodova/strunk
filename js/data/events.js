@@ -1,0 +1,38 @@
+export const events = [
+  {
+    type: "TreasureBox",
+    name: "Stash",
+    PROB: 50,
+    density: 5,
+    min: 1,
+    max: 50,
+    mapPROB: 0,
+  },
+  {
+    type: "NPC",
+    name: "Smith",
+    PROB: 100,
+    density: 0.5,
+    min: 1,
+    max: 5,
+    mapPROB: 30,
+  },
+  {
+    type: "NPC",
+    name: "Dealer",
+    PROB: 100,
+    density: 0.5,
+    min: 2,
+    max: 5,
+    mapPROB: 30,
+  },
+  {
+    type: "NPC",
+    name: "Merchant",
+    PROB: 100,
+    density: 0.5,
+    min: 1,
+    max: 5,
+    mapPROB: 30,
+  },
+];

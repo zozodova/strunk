@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>battle</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&display=swap" rel="stylesheet">
+
+  <style>
+
+:root {
+  --main-bg: rgb(23, 6, 2);
+  --main-text: rgb(255, 190, 0);
+  --sub-text: rgb(156, 96, 62);
+  --main-font: "Manufacturing Consent", sans-serif;
+}
+
+body{
+  font-family: var(--main-font);
+  font-size: 20px;
+  background-color: var(--main-bg);
+  color: var(--main-text);
+  
+}
+button {
+  background-color: var(--main-bg);
+  color: var(--main-text);
+  border: none;
+  box-shadow: 2px 2px 0 var(--main-text);
+  font-family:  var(--main-font);
+  font-size: 20px;
+  cursor: pointer;
+}
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: -2px -2px 0 var(--main-text);
+}
+.center-area {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+#tooltip{
+  position: fixed;
+  display: none;
+  background: var(--main-bg);
+  color: var(--main-text);
+  padding: 8px;
+  box-shadow: 2px 2px 0 var(--main-text);
+  font-size: 20px;
+  white-space: pre-line;
+  pointer-events: none;
+  z-index: 999;
+}
+
+#log{
+  position:fixed;
+  left: 50px;
+  top: 30px;
+  bottom: 50%;
+  width: 30%;
+  overflow-y: scroll; 
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+#playerStatus{
+  position: absolute;
+  text-align: left;
+  bottom: 50px;
+  width:80%; 
+  height:100px; 
+  display:flex;
+}
+.EnemyArea{
+    position: fixed;
+  top:10px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.battleUI{
+  display: none;
+}
+.itemUI{
+  height: 30px; 
+  font-size: 30px;
+  display:flex;;
+  padding: 5px;
+  border-bottom:2px solid var(--sub-text);
+}
+.directionButton{
+  position:fixed;
+  translate: -50% -50%;
+  height:50px;
+  width: 50px;
+}
+#rewardBox{
+  position: absolute; 
+  height: 50px; 
+  width: 100px;
+  z-index: 1;
+}
+#reward{
+  position: absolute;
+  background-color: var(--main-bg);
+  box-shadow: -2px -2px 0 var(--main-text);
+  top: 50%; 
+  left: 50%;
+  translate: -50% -50%; 
+  height: 300px;
+  width: 200px;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  z-index: 2;
+}
+#reward::-webkit-scrollbar{
+  display:none;
+}
+.rewardItem{
+  width:60%;
+  height:30px;
+  margin: 15px 30px;
+}
+.skillButton{
+  width: 100%;
+  height: 50px;
+
+  font-size: 30px;
+  color: var(--sub-text);
+  box-shadow: none;
+  margin-bottom: 5px;
+}
+.skillButton.mouseOver{
+  color: var(--main-text);
+  white-space: nowrap;
+}
+.skillButton:active{
+  box-shadow: none;
+  transform: translate(0, 2px);
+}
+.skillButton.pressed{
+  box-shadow: none;
+  transform: translate(0, 2px);
+  text-shadow: 0 0 10px currentColor;
+}
+#endTurnButton.active{
+  text-shadow: 0 0 10px currentColor;
+}
+</style>
+</head>
+<body>
+
+<div class="EnemyArea">
+  <div id = "enemyStatus" style="display: none">
+    <p id = "enemyInfo" style="left: 0;"></p>
+    <div style="width: 200px; height: 10px; border: 1px solid var(--main-text);">
+      <div id="enemyHPBar" style="height: 100%; width: 100%; background: var(--main-text);"></div>
+        
+    </div>
+  </div>
+  
+</div>
+
+<div class="center-area">
+  <button id="rewardBox" onclick="showReward();" style="display:none;">Reward
+  </button>
+  <div id="playerStatus">
+  <div style="position:absolute; left:0; width:30%; height: 100%;">
+    <p id = "playerInfo" style="position:absolute; top:15%; font-size: 30px;"></p> 
+    <p id="actionPoint" class="battleUI" style="position:absolute; right:0; top:30%;"></p>
+    <div style="position:absolute; top: 80%; width: 100%; height: 10px; border: 1px solid var(--main-text);">
+      <div id="playerHPBar" style="height: 100%; width: 100%; background: var(--main-text);"></div>
+    </div>
+  </div>
+  <div style="position:absolute; right:0; width:30%; height: 100%;">
+    <div class="itemUI">Iron Sword
+      <!-- <button class="battleUI" onclick="attack(this);" style="position:absolute; right:0; height:30px; width:auto; min-width: 80px;">Use</button> -->
+    </div>
+    <div class="itemUI">Heal
+      <!-- <button class="battleUI" onclick="skill(this);" style="position:absolute; right:0; height:30px; width:auto; min-width: 80px;">Use</button> -->
+    </div>
+    <button id="endTurnButton" class="battleUI" onclick="finish();" style="position:absolute; right:0; bottom:-20px; height:30px; width:100px;">End Turn</button>
+  </div>
+  <div id="skillUI" style="position:absolute; left:50%; width:20%; height: 100%; translate: -50% 0; text-align: center;">
+  </div>
+  </div>
+</div>
+
+
+<div id="reward" style="display:none;">
+  <button onclick="closeReward();" style="position: absolute; top:5px; right:5px; width:30px; height:30px;">x
+  </button>
+</div>
+
+<div id="hands">
+
+</div>
+<div id="tooltip"></div>
+<div id="position" style="position:fixed; top: 50px; right: 50px;"></div>
+
+<div id="choices">
+    <button class="directionButton" onclick="goStraight()" style="top:35%; left: 50%;">↑</button>
+    <button class="directionButton" onclick="goLeft()" style="top:50%; left: 30%;">←</button>
+    <button class="directionButton" onclick="goRight()" style="top:50%; left: 70%;">→</button>
+    <button class="directionButton" onclick="goDown()" style="top:65%; left: 50%;">↓</button>
+</div>
+
+<p id="log" style="white-space: pre-line;"></p>
+
+
+
+<script>
+let maxHP = 100
+let playerHP = maxHP;
+let maxAP = 5;
+let playerAP = maxAP;
+let block = 0;
+
+let isCombat = false;
+let coin = 0;
+
+let enemies = [];
+let combatEnemy;
+let currentEnemy;
+
+const swordSound = new Audio("sword_atk.mp3");
+const healSound = new Audio("heal.mp3");
+const coinSound = new Audio("coin.mp3");
+const confirmSound = new Audio("confirm.mp3");
+const errorSound = new Audio("error.mp3");
+
+let position = { x: 0, y: 0 };
+
+let acquiredSkills = [];
+let equippedSkills = [];
+let skillHands = 2;
+
+let mapWidth = { min: -10, max: 10 };
+let mapHeight = { min: -10, max: 10 };
+
+document.getElementById("position").innerText = `(${position.x},${position.y})`;
+
+
+
+const monsters = [
+  {
+    name: "Slime",
+    HP: 50,
+    ATK: 10,
+    PROB: 60,
+    COIN: 10
+  },
+  {
+    name: "Goblin",
+    HP: 30,
+    ATK: 15,
+    PROB: 50,
+    COIN: 15
+  },
+  {
+    name: "Dragon",
+    HP: 150,
+    ATK: 20,
+    PROB: 10,
+    COIN: 40
+  }
+];
+
+const weapons = [
+  {
+    name: "Iron Sword",
+    ATK: 5,
+    TIMES: 1,
+    ACC: 10,
+    CRIT: 10,
+    Status: "None",
+    PROB: 0
+  },
+  {
+    name: "Dual Knife",
+    ATK: 2,
+    TIMES: 2,
+    ACC: 10,
+    CRIT: 30,
+    Status: "None",
+    PROB: 50
+  },
+  {
+    name: "Heavy mace",
+    ATK: 12,
+    TIMES: 1,
+    ACC: 30,
+    CRIT: 10,
+    Status: "None",
+    PROB: 30
+  },
+  {
+    name: "Claymore",
+    ATK: 10,
+    TIMES: 1,
+    ACC: 10,
+    CRIT: 30,
+    Status: "None",
+    PROB: 10
+  }
+];
+
+const armors = [
+  {
+    name: "Leather Armor",
+    DEF: 5,
+    Status: "None",
+    PROB: 30,
+  },
+];
+
+const skills = [
+  {
+    name: "Strike",
+    AP: 1,
+    
+    PROB: 30
+  },
+  {
+    name: "Heavy Strike",
+    AP: 2,
+    PROB: 30
+  },
+  {
+    name: "Fire Strike",
+    AP: 1,
+    PROB: 30
+  },
+];
+
+let currentWeapon = weapons[0];
+let currentArmor = armors[0];
+let currentSkill = skills[0];
+acquiredSkills.push(skills[0]);
+equippedSkills.push(skills[0]);
+
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function update() {
+  // document.getElementsByClassName("battleUI")[1].innerText = "Use (" + "▮".repeat(currentWeapon.AP) + ")";
+  // document.getElementsByClassName("battleUI")[2].innerText = "Use (" + "▮".repeat(currentSkill.AP) + ")";
+  document.getElementById("playerInfo").innerText =
+    `${playerHP}`;
+  let percent1 = (playerHP / maxHP) * 100;
+  document.getElementById("playerHPBar").style.width = percent1 + "%";
+  if (currentEnemy) {
+    document.getElementById("enemyInfo").innerText =
+      `${currentEnemy.name} \n HP: ${enemyHP}`;
+    let percent2 = (enemyHP / currentEnemy.HP) * 100;
+    document.getElementById("enemyHPBar").style.width = percent2 + "%";
+  }
+
+  document.getElementById("actionPoint").innerText =
+    "▮".repeat(playerAP) + "▯".repeat(maxAP - playerAP);
+
+    if(playerAP == 0){
+      document.getElementById("endTurnButton").classList.add("active");
+    }
+    else{
+      document.getElementById("endTurnButton").classList.remove("active");
+    }
+}
+
+
+function showTooltip(text, event){
+  const tip = document.getElementById("tooltip");
+
+  tip.innerText = text;
+  tip.style.display = "block";
+  tip.style.left = (event.clientX) + "px";
+  tip.style.top  = (event.clientY) + "px";
+}
+
+function moveTooltip(event){
+  const tip = document.getElementById("tooltip");
+  tip.style.left = (event.clientX) + "px";
+  tip.style.top  = (event.clientY) + "px";
+}
+function hideTooltip(){
+  document.getElementById("tooltip").style.display = "none";
+}
+
+
+function log(text) {
+  const logElement = document.getElementById("log");
+  logElement.innerText = text + "\n" + logElement.innerText;
+}
+
+
+function goStraight(){
+  log("Moved north");
+  position.y += 1;
+  move();
+}
+
+function goLeft(){
+  log("Moved west");
+  position.x -= 1;
+  move();
+}
+
+function goRight(){
+  log("Moved east");
+  position.x += 1;
+  move();
+}
+
+function goDown(){
+  log("Moved south");
+  position.y -= 1;
+  move();
+}
+
+function move(){
+  const rew = document.getElementById("reward");
+  document.getElementById("position").innerText = `(${position.x},${position.y})`;
+  rew.style.display = "none";
+  const rewBox = document.getElementById("rewardBox");
+  rewBox.style.display = "none";
+  rew.innerHTML = `<button onclick="closeReward();" style="position: absolute; top:5px; right:5px; width:30px; height:30px;">x
+  </button>`;
+
+  if(isOccupied(position.x,position.y)){
+    const enemy = enemies.find(e => {return (e.x === position.x && e.y === position.y)});
+    battle(enemy.kind);
+    combatEnemy = enemies.indexOf(enemy);
+  }
+  if(isOccupied(position.x,position.y + 1)){
+    document.getElementsByClassName("directionButton")[0].textContent = "!";
+  }
+  else{
+    document.getElementsByClassName("directionButton")[0].textContent = "↑";
+  }
+  if(isOccupied(position.x - 1,position.y)){
+    document.getElementsByClassName("directionButton")[1].textContent = "!";
+  }
+  else{
+    document.getElementsByClassName("directionButton")[1].textContent = "←";
+  }
+  if(isOccupied(position.x + 1,position.y)){
+    document.getElementsByClassName("directionButton")[2].textContent = "!";
+  }
+  else{
+    document.getElementsByClassName("directionButton")[2].textContent = "→";
+  }
+    if(isOccupied(position.x,position.y - 1)){
+  document.getElementsByClassName("directionButton")[3].textContent = "!";
+  }
+  else{
+  document.getElementsByClassName("directionButton")[3].textContent = "↓";
+  }
+}
+
+for (let i = 0; i <100; i++) {
+  spawnEnemy();
+}
+
+function spawnEnemy(){
+  let totalWeight = 0;
+  let index;
+  monsters.forEach(monster => {
+    totalWeight += monster.PROB;
+  });
+  let r = Math.floor(Math.random() * totalWeight);
+
+  for (let i = 0; i <monsters.length; i++) {
+    if (r < monsters[i].PROB) {
+      index = i;
+      break;
+    }
+
+    r -= monsters[i].PROB;
+  }
+
+  let x, y;
+  do{
+    x = Math.floor((Math.random() - 0.5) * (mapWidth.max - mapWidth.min));
+    y = Math.floor((Math.random() - 0.5) * (mapHeight.max - mapHeight.min));
+  }while((x === 0 && y === 0) || isOccupied(x,y));
+    const enemy = {
+    kind: index,
+    x: x,
+    y: y,
+  };
+  enemies.push(enemy);
+}
+function isOccupied(x, y){
+  return enemies.some(e => e.x === x && e.y === y);
+}
+
+function battle(index) {
+  isCombat = true;
+  playerAP = 5;
+  currentEnemy = monsters[index];
+  document.getElementById("choices").style.display = "none";
+  const ui = document.getElementsByClassName("battleUI");
+  for(let i = 0; i < ui.length; i++){
+    ui[i].style.display = "block";
+  }
+  document.getElementById("enemyStatus").style.display = "block";
+
+
+  document.getElementById("enemyInfo").innerText = `${currentEnemy.name} \n HP: ${currentEnemy.HP}`;
+  enemyHP = currentEnemy.HP;
+  update();
+
+
+}
+
+async function attack(btn) {
+    if (playerAP < currentWeapon.AP) {
+    log("Not enough AP");
+    errorSound.currentTime = 0;
+    errorSound.play();
+  return;
+}
+  playerAP -= currentWeapon.AP;
+  btn.classList.add("pressed");
+  for (let i = 1; i <= currentWeapon.TIMES ; i++)
+  { 
+
+    let damage = (normalDistribution(currentWeapon.ACC)*currentWeapon.ATK);
+    if(Math.random() <= (currentWeapon.CRIT / 100))
+    {
+      damage = (damage * 1.25);
+    }
+    damage = Math.round(damage);
+  enemyHP -= damage;
+  const s = swordSound.cloneNode();
+  //s.play();
+  log("You dealt " + damage + " damage");
+  await wait(100);
+    update();
+  }
+  btn.classList.remove("pressed");
+  checkGame();
+}
+
+function normalDistribution(accuracy){
+	var x = Math.random();
+	var y = Math.random();
+	
+	var z1 = 1 + Math.sqrt(-2*Math.log(x))*Math.cos(2 * Math.PI  * y)* accuracy/100;
+
+	return z1;
+}
+
+async function skill(btn) {
+  if (playerAP < currentSkill.AP) {
+    log("Not enough AP");
+    errorSound.currentTime = 0;
+    errorSound.play();
+    return;
+  }
+  btn.classList.add("pressed");
+  playerAP -= currentSkill.AP;
+  let n = skills.indexOf(currentSkill);
+  if(n == 0){
+    let
+  }
+  btn.classList.remove("pressed");
+  update();
+  checkGame();
+}
+
+function finish(){
+  playerAP = 5;
+  enemyTurn();
+  update();
+  checkGame();
+}
+function enemyTurn() {
+  if (enemyHP <= 0) return;
+
+  let action = Math.random();
+
+  if (action < 0.7) {
+    let damage = Math.round(normalDistribution(10)*currentEnemy.ATK);
+    playerHP -= damage;
+    log(currentEnemy.name + " dealt "+ damage + " damage");
+  } else {
+  }
+}
+
+function checkGame() {
+  if (playerHP <= 0) {
+    log("You lose")
+    isCombat = false;
+    reset();
+  } else if (enemyHP <= 0) {
+    log("You win");
+    isCombat = false;
+    enemies.splice(combatEnemy,1);
+      document.getElementById("choices").style.display = "block";
+      const ui = document.getElementsByClassName("battleUI");
+    for(let i = 0; i < ui.length; i++){
+      ui[i].style.display = "none";
+    }
+      document.getElementById("enemyStatus").style.display = "none";
+      document.getElementById("rewardBox").style.display = "block";
+
+      const rew = document.getElementById("reward");
+      rew.innerHTML += `
+    
+        <button id = "coinBtn", onclick="collectCoins(this)" class="rewardItem">${currentEnemy.COIN} Coins</button>
+      
+    `;
+      if (Math.random() < 0.5) {
+      randomWeapon();
+      }
+      if (Math.random() < 0.5) {
+      randomArmor();
+      }
+      if (Math.random() < 0.5) {
+      randomSkill();
+      }
+
+  }
+}
+
+function weaponUpdate() {
+  const weaponUI = document.getElementsByClassName("itemUI")[0];
+  weaponUI.textContent = currentWeapon.name;
+  log(`You equipped ${currentWeapon.name}`);
+  weaponUI.addEventListener("mouseover", function (event) {
+  showTooltip(
+      `${currentWeapon.name} 
+      ATK: ${currentWeapon.ATK} x ${currentWeapon.TIMES}
+      AP: ${currentWeapon.AP}
+      Crit: ${currentWeapon.CRIT}%`,
+      event
+    );
+    
+  });
+  weaponUI.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  weaponUI.addEventListener("mouseout", function (event){
+    hideTooltip();
+  });
+}
+function armorUpdate() {
+  const armorUI = document.getElementsByClassName("itemUI")[1];
+  armorUI.textContent = currentArmor.name;
+  log(`You equipped ${currentArmor.name}`);
+  armorUI.addEventListener("mouseover", function (event) {
+  showTooltip(
+      `${currentArmor.name} 
+      DEF: ${currentArmor.DEF}`,
+      event
+    );
+    
+  });
+  armorUI.addEventListener("mousemove", function (event){
+    moveTooltip(event);
+  });
+  armorUI.addEventListener("mouseout", function (event){
+    hideTooltip();
+  });
+}
+function skillUpdate() {
+  const skillUI = document.getElementById("skillUI");
+  skillUI.innerHTML = "";
+  for (let skill of equippedSkills){
+    const skillButton = document.createElement("button");
+    skillButton.textContent = skill.name;
+    skillButton.classList.add("skillButton");
+    skillButton.addEventListener("click", function (){
+      if(isCombat){
+      attack(skillButton);
+      }
+    }) 
+    skillButton.addEventListener("mouseover", function (event) {
+    showTooltip(
+        "???",
+        event
+      );
+    if(isCombat){
+    skillButton.classList.add("mouseOver");
+    }
+    });
+    skillButton.addEventListener("mousemove", function (event){
+      moveTooltip(event);
+    });
+    skillButton.addEventListener("mouseout", function (event){
+      hideTooltip();
+      skillButton.classList.remove("mouseOver");
+    });
+    skillUI.appendChild(skillButton);
+  }
+  
+}
+
+function randomWeapon() {
+  let totalWeight = 0;
+  weapons.forEach(weapon => totalWeight += weapon.PROB);
+
+  let r = Math.floor(Math.random() * totalWeight);
+   for (let i = 0; i < weapons.length; i++) {
+    if (r < weapons[i].PROB) {
+      const newWeapon = { ...weapons[i] };
+      dropWeapon(newWeapon);
+      break;
+    }
+    r -= weapons[i].PROB;
+  }
+}
+function randomArmor() {
+  let totalWeight = 0;
+  armors.forEach(armor => totalWeight += armor.PROB);
+
+  let r = Math.floor(Math.random() * totalWeight);
+   for (let i = 0; i < armors.length; i++) {
+    if (r < armors[i].PROB) {
+      const newArmor = { ...armors[i] };
+      dropArmor(newArmor);
+      break;
+    }
+    r -= armors[i].PROB;
+  }
+}
+function randomSkill() {
+  let totalWeight = 0;
+  skills.forEach(skill => totalWeight += skill.PROB);
+
+  let r = Math.floor(Math.random() * totalWeight);
+   for (let i = 0; i < skills.length; i++) {
+    if (r < skills[i].PROB) {
+      const newSkill = { ...skills[i] };
+      dropSkill(newSkill);
+      break;
+    }
+    r -= skills[i].PROB;
+  }
+}
+
+function dropWeapon(weapon){
+  const rew = document.getElementById("reward");
+  const button = document.createElement("button");
+  button.textContent = weapon.name;
+  button.classList.add("rewardItem");
+  button.addEventListener("click", function () {
+  pickUpWeapon(weapon,button);
+  });
+  rew.appendChild(button);
+}
+function dropArmor(armor){
+  const rew = document.getElementById("reward");
+  const button = document.createElement("button");
+  button.textContent = armor.name;
+  button.classList.add("rewardItem");
+  button.addEventListener("click", function () {
+  pickUpArmor(armor,button);
+  });
+  rew.appendChild(button);
+}
+function dropSkill(skill){
+  const rew = document.getElementById("reward");
+  const button = document.createElement("button");
+  button.textContent = skill.name;
+  button.classList.add("rewardItem");
+  button.addEventListener("click", function () {
+  pickUpSkill(skill,button);
+  });
+  rew.appendChild(button);
+}
+
+function pickUpWeapon(newWeapon,btn) {
+  
+  dropWeapon(currentWeapon);
+  currentWeapon = newWeapon;
+  weaponUpdate();
+  btn.remove();
+}
+function pickUpArmor(newArmor,btn) {
+  
+  dropArmor(currentArmor);
+  currentArmor = newArmor;
+  armorUpdate();
+  btn.remove();
+}
+function pickUpSkill(newSkill,btn) {
+  log('a');
+  acquiredSkills.push(newSkill);
+  if(acquiredSkills.length <= skillHands){
+    equippedSkills.push(newSkill);
+  }
+  skillUpdate();
+  btn.remove();
+}
+
+function showReward(){
+  const rew = document.getElementById("reward");
+  rew.style.display="block";
+}
+function closeReward(){
+  const rew = document.getElementById("reward");
+  rew.style.display="none";
+  if(rew.childElementCount == 1){
+    const rewBox = document.getElementById("rewardBox");
+    rewBox.style.display = "none";
+  }
+}
+
+
+function collectCoins(btn){
+  coin += currentEnemy.COIN;
+  btn.remove();
+  log(`You got ${currentEnemy.COIN} coin`);
+  update();
+}
+function reset() {
+  playerHP = maxHP;
+  playerAP = maxAP;
+  update();
+  log("");
+}
+
+update();
+move();
+weaponUpdate();
+armorUpdate();
+skillUpdate();
+</script>
+
+</body>
+</html>

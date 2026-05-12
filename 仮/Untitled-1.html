@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>battle</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&family=Yuji+Mai&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Grenze:ital,wght@0,100..900;1,100..900&family=Manufacturing+Consent&family=Yuji+Mai&display=swap" rel="stylesheet">
+
+
+  <style>
+:root {
+  --main-bg: rgb(0, 0, 0);
+  --main-text: rgb(255, 255, 255);
+  --main-font: "Manufacturing Consent", "Yuji Mai", sans-serif;
+
+  
+}
+body{
+  font-family: var(--main-font);
+  font-size: 50px;
+  background-color: var(--main-bg);
+  color: var(--main-text);
+  line-height: 1.2;
+}
+
+.accent {
+  color: rgb(255, 0, 0);
+  background-color: var(--main-text);
+}
+
+.skill-name.l:nth-child(1) { --i: 0; }
+.skill-name.l:nth-child(2) { --i: 1; }
+.skill-name.l:nth-child(3) { --i: 2; }
+.skill-name.l:nth-child(4) { --i: 3; }
+.skill-name.l:nth-child(5) { --i: 4; }
+.skill-name.l:nth-child(6) { --i: 5; }
+.skill-name.l:nth-child(7) { --i: 6; }
+.skill-name.l:nth-child(8) { --i: 7; }
+.skill-name span:nth-child(even) { transform: rotate(-10deg);}
+.skill-name span:nth-child(odd) { transform: rotate(10deg); }
+
+.board{
+  position: fixed;
+  top: 50%;
+  width: 50%;
+  height: 80%;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.board.l{
+  left: 0;
+}
+.skill-name {
+  opacity: 1;
+  display: inline-block;
+}
+.skill-name.l {
+  left: 0;
+  --theta: calc((var(--i) * -10deg) + 20deg);
+  transform: translateX(0) rotate(var(--theta));
+}
+
+</style>
+</head>
+<body>
+<div class = "board l">
+  <div class = "skill-name l">In<span class="accent">c</span>inerate</div>
+  <div class = "skill-name l">St<span class="accent">ri</span>ke</div>
+  <div class = "skill-name l">Blo<span class="accent">c</span>k</div>
+  <div class = "skill-name l">M<span class="accent">o</span>lten <span class="accent">S</span>kin</div>
+  <div class = "skill-name l"><span class="accent">A</span>im</div>
+</div>
+
+<script>
+
+
+
+  
+</script>
+
+</body>
+
+
+</html>
