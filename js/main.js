@@ -1049,7 +1049,7 @@ async function attack(effect, card) {
       
     let modATK = (cWeapon[0].ATK * (100 + getStats("magATK")) / 100 * normalDistribution(10));
     modATK = modATK * (100 + activeEnemy.finalStats.ELE) / 100 * effect.mag / 100;
-    activeEnemy.stateList = activeEnemy.stateList.filter(s => {return (s.type != "chargeDebuff" || s.trigger != "attack");});
+    activeEnemy.stateList = activeEnemy.stateList.filter(s => {return (s.type != "chargeDebuff" || s.trigger != "hit");});
     stateList = stateList.filter(s => {return (s.type != "chargeBuff" || s.trigger != "attack" );});
     if(Math.random() <= (finalStats.CRT / 100))
     {
@@ -1203,7 +1203,7 @@ async function turnEnd(){
   
   for (let state of stateList){
     if(state.type === "damage"){
-      let damage = state.value * ((100 - finalStats[`res${state.ele}`]) / 100);
+      
       play(sounds.debuffDamage);
       shake2();
       if(gainedBlock >= damage){
@@ -1341,7 +1341,7 @@ function enemyAttack(enemy, value){
     log(enemy.name + " dealt "+ (value - gainedBlock) + " damage");
     gainedBlock = 0;
     }
-    stateList = stateList.filter(s => {return(s.type != "chargeDebuff" || s.trigger != "attack");})
+    stateList = stateList.filter(s => {return(s.type != "chargeDebuff" || s.trigger != "hit");})
     enemy.stateList = enemy.stateList.filter(s => {return(s.type != "chargeBuff" || s.trigger != "attack");})
   }
   else{
@@ -1357,21 +1357,23 @@ function enemyDebuff(enemy, data){
 }
 
 
-function addState(name, power, turn, stateList){ 
+function addState(name, power, turn, List){ 
   
   const base = states[name];
 
-  const index = stateList.findIndex(s => s.name == name)
+  const modPower = power * (List === stateList ? (base.element ?((100 - finalStats[`res${base.element}`]) / 100) : 1): 1);
+
+  const index = List.findIndex(s => s.name == name)
   if(index === -1){
-    stateList.push(buildState(base, name, power, turn));
+    List.push(buildState(base, name, modPower, turn));
   }
   else{
     switch(base.merge){
       case "max":
-        stateList[index] = buildState(base, name, Math.max(stateList[index].power, power), turn);
+        List[index] = buildState(base, name, Math.max(List[index].power, modPower), turn);
         break;
       case "stack":
-        stateList[index] = buildState(base, name, stateList[index].power + power, turn);
+        List[index] = buildState(base, name, List[index].power + modPower, turn);
         break;
     }
     
@@ -1383,6 +1385,7 @@ function buildState(base, name, power, turn){
     name,
     sign: base.sign,
     type: base.type,
+    element: base.element,
     merge: base.merge,
     power,
     trigger: base.trigger,
@@ -1554,10 +1557,10 @@ function characterReInfo(){
   SPD: ${Math.floor(cArmor.SPD)} × ${Math.floor(100 + getStats("magSPD")) / 100} = ${Math.floor(finalStats.SPD)}
   Chance to Evade: ${isCombat ? (100 - clamp((Math.floor(activeEnemy.finalStats.ACC / (activeEnemy.finalStats.ACC + finalStats.SPD) * 100)), 15, 95) + "%") : ""}
   Resistance:
-  &nbsp;&nbsp;FIR: ${getStats("resFIR")}%
-  &nbsp;&nbsp;ICE: ${getStats("resICE")}%
-  &nbsp;&nbsp;LTN: ${getStats("resLTN")}%
-  &nbsp;&nbsp;ACD: ${getStats("resACD")}%
+  &nbsp;&nbsp;FIR: ${finalStats.resFIR}%
+  &nbsp;&nbsp;ICE: ${finalStats.resICE}%
+  &nbsp;&nbsp;LTN: ${finalStats.resLTN}%
+  &nbsp;&nbsp;ACD: ${finalStats.resACD}%
   `
   character.innerHTML = (colorizeText(characterInfo));
 }
@@ -1623,7 +1626,7 @@ function weaponTooltip(weapon, event) {
   const lines = [
     nameLines,
     `ATK: ${weapon[0].ATK}`,
-    `CRT: ${weapon[0].CRT}% CRD: ${100 + weapon[0].CRD}%`,
+    `CRT: ${weapon[0].CRT}% CRD: ${weapon[0].CRD}%`,
     `ACC: ${weapon[0].ACC}`,
     ...modLines,
     `<br> Granted Skill`,
@@ -2136,7 +2139,7 @@ function createNPC(name){
     goods.className = "goods";
     const goodsCost = document.createElement("div");
     goodsCost.className = "goodsCost";
-    const skill = random(skills);
+    const skill = random(skills, area.Tier);
     const card = createCard(skill);
     goodsCost.innerHTML = `Coin: ${skill.CST}`;
     card.style.marginRight = "0";

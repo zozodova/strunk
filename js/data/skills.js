@@ -272,4 +272,16 @@ export const skills = [
     CST: 200,
     PROB: 15
   },
+
+  {
+    Tier: 3,
+    effects:[
+    {type:"debuff", name: "Burn",value: 100, TRN: 1}
+    ],
+    name: "Incinerate",
+    description: ``,
+    AP: 1,
+    CST: 100,
+    PROB: 30
+  },
 ];

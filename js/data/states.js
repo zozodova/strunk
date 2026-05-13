@@ -7,7 +7,7 @@ export const states = {
     element: "FIR",
     merge: "max",
     create(power){
-      const fir = clamp(Math.round(power / 6), 1, 99999)
+      const fir = clamp(Math.round(power / 3), 1, 99999)
       return {value: fir};
     },
     description(data){
@@ -35,7 +35,7 @@ export const states = {
   Electrify: {
     sign: `<span class = "ltn">電</span>`,
     type: "chargeDebuff",
-    trigger: "attack",
+    trigger: "hit",
     element: "LTN",
     merge: "stack",
     create(power){
@@ -121,9 +121,33 @@ export const states = {
       return `ATK +${data.value}%`;
     }
   },
+  StrengthCharge: {
+    sign: "攻",
+    type: "chargeBuff",
+    trigger: "attack",
+    merge: "stack",
+    create(power){
+      return {mods:{magATK: power}, value: power};
+    },
+    description(data){
+      return `ATK +${data.value}%`;
+    }
+  },
   Fortify: {
     sign: "堅",
     type: "buff",
+    merge: "stack",
+    create(power){
+      return {mods:{magDEF: power}, value: power};
+    },
+    description(data){
+      return `DEF +${data.value}%`;
+    }
+  },
+  FortifyCharge: {
+    sign: "堅",
+    type: "chargeBuff",
+    trigger: "block",
     merge: "stack",
     create(power){
       return {mods:{magDEF: power}, value: power};
@@ -177,9 +201,33 @@ export const states = {
       return `CRT +${data.value}%`;
     }
   },
+  InsightCharge: {
+    sign: "究",
+    type: "chargeBuff",
+    trigger: "attack",
+    merge: "stack",
+    create(power){
+      return {mods:{magCRT: power}, value: power};
+    },
+    description(data){
+      return `CRT +${data.value}%`;
+    }
+  },
   Fervor: {
     sign: "渾",
     type: "buff",
+    merge: "stack",
+    create(power){
+      return {mods:{magCRD: power}, value: power};
+    },
+    description(data){
+      return `CRD +${data.value}%`;
+    }
+  },
+  FervorCharge: {
+    sign: "渾",
+    type: "chargeBuff",
+    trigger: "attack",
     merge: "stack",
     create(power){
       return {mods:{magCRD: power}, value: power};
