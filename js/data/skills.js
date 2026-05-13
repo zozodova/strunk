@@ -9,7 +9,7 @@ export const skills = [
   
     AP: 1,
     CST: 50,
-    PROB: 30
+    PROB: 100
   },
   {
     Tier: 2,
@@ -20,7 +20,7 @@ export const skills = [
     ],
     AP: 2,
     CST: 100,
-    PROB: 30
+    PROB: 20
   },
   {
     Tier: 5,
@@ -54,7 +54,7 @@ export const skills = [
     ],
     AP: 1,
     CST: 50,
-    PROB: 30
+    PROB: 120
   },
   {
     Tier: 3,

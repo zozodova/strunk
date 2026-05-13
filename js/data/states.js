@@ -86,7 +86,7 @@ export const states = {
   Vulnerable: {
     sign: "脆",
     type: "debuff",
-    merge: "max",
+    merge: "stack",
     create(power){
       return {mods: {magDEF: -power}, value: power};
     },
@@ -98,7 +98,7 @@ export const states = {
   Plundered: {
     sign: "奪",
     type: "debuff",
-    merge: "max",
+    merge: "stack",
     create(power){
       return {mods:{addDRW: -power}, value: power};
     },

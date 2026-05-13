@@ -2079,7 +2079,7 @@ function createNPC(name){
     goods.className = "goods";
     const goodsCost = document.createElement("div");
     goodsCost.className = "goodsCost";
-    const glyph = random(glyphs);
+    const glyph = random(glyphs, area.Tier);
     button.classList.add("glyphOnSale");
     button.innerHTML = 
     `<div class="glyphOnSaleTop">Enchant your weapon</div>
