@@ -15,7 +15,7 @@ export const monsters = {
       SPD: 20,
       ACC: 100,
     }],
-    PROB: 60,
+
     REW: [10, 30, 0, 1, 5]
   },
   {
@@ -49,7 +49,7 @@ export const monsters = {
       ACC: 100,
     }
   ],
-    PROB: 40,
+
     COIN: 10,
     REW: [10, 30, 0, 1, 5]
   },
@@ -69,7 +69,7 @@ export const monsters = {
       SPD: 40,
       ACC: 130,
     }],
-    PROB: 50,
+
     COIN: 15,
     REW: [10, 30, 0, 1, 5]
   },
@@ -89,7 +89,7 @@ export const monsters = {
       SPD: 50,
       ACC: 180,
     }],
-    PROB: 20,
+
     COIN: 40,
     REW: [20, 30, 0, 2, 5]
   },
@@ -110,7 +110,7 @@ export const monsters = {
       SPD: 30,
       ACC: 150,
     }],
-    PROB: 10,
+
     COIN: 100,
     REW: [100, 30, 30, 10, 10]
   },
@@ -132,7 +132,7 @@ export const monsters = {
       SPD: 40,
       ACC: 140,
     }],
-    PROB: 40,
+
     COIN: 20,
     REW: [10, 30, 0, 1, 5]
   },
@@ -153,7 +153,7 @@ export const monsters = {
       SPD: 20,
       ACC: 100,
     }],
-    PROB: 60,
+
     COIN: 20,
     REW: [30, 30, 0, 2, 5]
   },
@@ -175,7 +175,7 @@ export const monsters = {
       SPD: 10,
       ACC: 80,
     }],
-    PROB: 40,
+
     COIN: 40,
     REW: [30, 30, 0, 2, 5]
   },
@@ -196,7 +196,7 @@ export const monsters = {
       SPD: 100,
       ACC: 200,
     }],
-    PROB: 20,
+
     COIN: 40,
     REW: [30, 30, 0, 2, 5]
   },
@@ -221,7 +221,7 @@ export const monsters = {
       SPD: 40,
       ACC: 110,
     }],
-    PROB: 20,
+
     COIN: 70,
     REW: [50, 30, 10, 2, 5]
   },
@@ -257,7 +257,7 @@ export const monsters = {
       SPD: 40,
       ACC: 130,
     }],
-    PROB: 20,
+
     COIN: 70,
     REW: [50, 30, 10, 2, 7]
   },
@@ -281,7 +281,7 @@ export const monsters = {
       SPD: 20,
       ACC: 80,
     }],
-    PROB: 20,
+
     COIN: 100,
     REW: [100, 30, 10, 20, 8]
   },

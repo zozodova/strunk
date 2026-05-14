@@ -9,7 +9,6 @@ export const skills = [
   
     AP: 1,
     CST: 50,
-    PROB: 100
   },
   {
     Tier: 2,
@@ -19,8 +18,7 @@ export const skills = [
     {type:"attack", mag: 200},
     ],
     AP: 2,
-    CST: 100,
-    PROB: 20
+    CST: 100
   },
   {
     Tier: 5,
@@ -30,8 +28,7 @@ export const skills = [
     {type:"attack", mag: 300},
     ],
     AP: 3,
-    CST: 400,
-    PROB: 5
+    CST: 400
   },
   {
     Tier: 9,
@@ -42,7 +39,6 @@ export const skills = [
     ],
     AP: 4,
     CST: 1000,
-    PROB: 1
   },
 
   {
@@ -54,7 +50,6 @@ export const skills = [
     ],
     AP: 1,
     CST: 50,
-    PROB: 120
   },
   {
     Tier: 3,
@@ -65,7 +60,6 @@ export const skills = [
     ],
     AP: 2,
     CST: 200,
-    PROB: 30
   },
   {
     Tier: 7,
@@ -76,7 +70,6 @@ export const skills = [
     ],
     AP: 3,
     CST: 700,
-    PROB: 3
   },
 
   {
@@ -89,7 +82,6 @@ export const skills = [
     description: "Gain 60% armor block. Gain 1 AP next turn.",
     AP: 1,
     CST: 100,
-    PROB: 30
   },
   
   {
@@ -101,7 +93,6 @@ export const skills = [
     description: "deal 50% weapon damage. \n attack twice.",
     AP: 1,
     CST: 100,
-    PROB: 30
   },
   {
     Tier: 3,
@@ -112,7 +103,6 @@ export const skills = [
     description: "Draw 2 cards",
     AP: 1,
     CST: 100,
-    PROB: 30
   },
   {
     Tier: 2,
@@ -124,7 +114,6 @@ export const skills = [
     description: "Deal 80% weapon damage. Enemy DEF -30% for 2 turns.",
     AP: 1,
     CST: 200,
-    PROB: 30
   },
   {
     Tier: 3,
@@ -135,7 +124,6 @@ export const skills = [
     description: "Gain Focus +100% charge.",
     AP: 1,
     CST: 200,
-    PROB: 30
   },
 
   {
@@ -147,7 +135,6 @@ export const skills = [
     description: `FIR +50%`,
     AP: 1,
     CST: 100,
-    PROB: 30
   },
   {
     Tier: 2,
@@ -158,7 +145,6 @@ export const skills = [
     description: `50% ATK convert to FIR`,
     AP: 1,
     CST: 200,
-    PROB: 30
   },
   {
     Tier: 3,
@@ -169,7 +155,6 @@ export const skills = [
     description: `ICE +50%`,
     AP: 1,
     CST: 100,
-    PROB: 30
   },
   {
     Tier: 2,
@@ -180,7 +165,6 @@ export const skills = [
     description: `50% ATK convert to ICE`,
     AP: 1,
     CST: 200,
-    PROB: 30
   },
   {
     Tier: 3,
@@ -191,7 +175,6 @@ export const skills = [
     description: `LTN +50%`,
     AP: 1,
     CST: 100,
-    PROB: 30
   },
   {
     Tier: 2,
@@ -202,7 +185,6 @@ export const skills = [
     description: `50% ATK convert to LTN`,
     AP: 1,
     CST: 200,
-    PROB: 30
   },
    {
     Tier: 3,
@@ -213,7 +195,6 @@ export const skills = [
     description: `ACD +50%`,
     AP: 1,
     CST: 100,
-    PROB: 30
   },
   {
     Tier: 2,
@@ -224,7 +205,6 @@ export const skills = [
     description: `50% ATK convert to ACD`,
     AP: 1,
     CST: 200,
-    PROB: 30
   },
   {
     Tier: 3,
@@ -236,7 +216,6 @@ export const skills = [
     ],
     AP: 1,
     CST: 200,
-    PROB: 20
   },
   {
     Tier: 3,
@@ -247,7 +226,6 @@ export const skills = [
     ],
     AP: 0,
     CST: 200,
-    PROB: 15
   },
   {
     Tier: 4,
@@ -259,7 +237,6 @@ export const skills = [
     ],
     AP: 1,
     CST: 200,
-    PROB: 15
   },
   {
     Tier: 1,
@@ -270,7 +247,6 @@ export const skills = [
     ],
     AP: 1,
     CST: 200,
-    PROB: 15
   },
 
   {
@@ -282,6 +258,15 @@ export const skills = [
     description: ``,
     AP: 1,
     CST: 100,
-    PROB: 30
+  },
+
+  {
+    Tier: 1,
+    effects: [
+      {type: "buff", name: "Strength", value:20, TRN: 2}
+    ],
+    name: "Strength",
+    description: "ATK +20%",
+    CST: 100,
   },
 ];

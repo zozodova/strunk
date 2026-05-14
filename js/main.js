@@ -770,7 +770,7 @@ function createCard(skill){
     cardName.className = "cardName";
     cardDescription.className = "cardDescription";
     cardCost.className = "cardCost";
-    skill.PROB ? card.classList.add("cardDeco1") : card.classList.add("cardDeco2");
+    card.classList.add("cardDeco1");
 
     cardName.textContent = `${skill.name}`;
     cardDescription.innerHTML = `${colorizeText(skill.description)}`;

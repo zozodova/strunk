@@ -9,16 +9,8 @@ export const weapons = [
     mods: {
       BLE: 20
     },
-    skills: [{
-    name: "Strength",
-    description: "ATK +20%",
-    effects:[
-    {type:"buff", name: "Strength",value: 20, TRN: 2}
-    ],
-    AP: 1,
-    }],
     SLT: 1,
-    PROB: 30,
+    
     CST: 100
   },
   {
@@ -45,7 +37,7 @@ export const weapons = [
     AP: 1,
     }],
     SLT: 1,
-    PROB: 30,
+    
     CST: 100
   },
   {
@@ -72,7 +64,7 @@ export const weapons = [
     AP: 1,
     }],
     SLT: 1,
-    PROB: 30,
+    
     CST: 100
   },
   {
@@ -99,7 +91,7 @@ export const weapons = [
     AP: 1,
     }],
     SLT: 1,
-    PROB: 30,
+    
     CST: 100
   },
   {
@@ -126,7 +118,7 @@ export const weapons = [
     AP: 1,
     }],
     SLT: 1,
-    PROB: 30,
+    
     CST: 100
   },
   {
@@ -155,7 +147,7 @@ export const weapons = [
     AP: 1,
     }],
     SLT: 2,
-    PROB: 20,
+    
     CST: 200
   },
 ];
