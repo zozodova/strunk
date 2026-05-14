@@ -8,18 +8,26 @@ export function normalDistribution(accuracy){
 }
 
 export function random(List, tier){
-  const filteredList = tier? List.filter(e => (e.Tier >= tier - 1 && e.Tier <= tier + 1)) : List;
+  const filteredList = tier? List.filter(e => (e.Tier >= tier - 2 && e.Tier <= tier + 2)) : List;
   let totalWeight = 0;
-  filteredList.forEach(e => totalWeight += e.PROB);
-  let r = Math.floor(Math.random() * totalWeight);
-  for (let i = 0; i < List.length; i++) {
-    if (r < filteredList[i].PROB) {
+  filteredList.forEach(e => totalWeight += getTierWeight(e.Tier, tier));
+  let r = Math.random() * totalWeight;
+  for (let i = 0; i < filteredList.length; i++) {
+    if (r < getTierWeight(filteredList[i].Tier, tier)) {
       const s = { ...filteredList[i] };
       return(s)
       break;
     }
-    r -= filteredList[i].PROB;
+    r -= getTierWeight(filteredList[i].Tier, tier);
   }
+}
+function getTierWeight(itemTier, currentTier){
+  const diff = itemTier - currentTier;
+  let weight = Math.exp(-(diff ** 2) / 2);
+  if(diff > 0){
+    weight *= 0.5;
+  }
+  return weight;
 }
 
 export function mergeMods(...sources){
