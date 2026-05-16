@@ -10,7 +10,7 @@ import { enemyPrefixes } from "./data/enemyFix.js";
 import { events } from "./data/events.js";
 import { states } from "./data/states.js";
 
-import { normalDistribution, random, wait, mergeMods, clamp } from "./utils.js";
+import { normalDistribution, randomByTier, randomByProb, wait, mergeMods, clamp } from "./utils.js";
 
 let maxHP = 1000
 let playerHP;
@@ -114,7 +114,7 @@ let cell = [];
 let spawnableCell = [];
 
 let cWeapon = [{...weapons[0]}];
-weaponSkills = [...weapons[0].skills];
+weaponSkills = [];
 let cArmor = {...armors[0]};
 let cGlyphs = [];
 let weaponPSC = 0;
@@ -152,7 +152,7 @@ let Moh;
 
 let usedSkill;
 for (let i = 0; i < 20; i++){
-  deck.push(random(skills, 1));
+  deck.push(randomByTier(skills, 1));
 }
 
 const buttons = document.querySelectorAll(".directionButton");
@@ -579,7 +579,7 @@ function spawnUniqueEvent(){
     const p = {
       type: "Portal",
       id: portal.id,
-      position: portal.position !== "random" ? portal.position : getRandomSpawnPosition(),
+      position: portal.position !== "randomByTier" ? portal.position : getRandomSpawnPosition(),
       mapPROB: portal.mapPROB,
     };
     randomEvents[area.id].push(p);
@@ -589,7 +589,7 @@ function spawnUniqueEvent(){
     const b = {
       type: "Boss",
       id: boss.id,
-      position: boss.position !== "random" ? boss.position : getRandomSpawnPosition(),
+      position: boss.position !== "randomByTier" ? boss.position : getRandomSpawnPosition(),
       mapPROB: boss.mapPROB,
     };
     randomEvents[area.id].push(b);
@@ -598,7 +598,7 @@ function spawnUniqueEvent(){
 }
 function spawnEnemy(){
   const enemy = {
-    kind: random(monsters[area.id]),
+    kind: randomByTier(monsters[area.id], area.tier),
     position: getRandomSpawnPosition(),
   };
   enemies[area.id].push(enemy);
@@ -644,7 +644,7 @@ function battle(kind) {
   turn = 0;
   attackCount = 0;
   drawPile = [...weaponSkills, ...deck];
-  cEnemy = {Tier: kind.Tier, content:[], COIN: kind.COIN, REW: kind.REW};
+  cEnemy = {tier: kind.tier, content:[], COIN: kind.COIN, REW: kind.REW};
 
   const enemyContent = kind.content;
   for (let enemy of enemyContent){
@@ -660,7 +660,7 @@ function battle(kind) {
   document.getElementById("positionUI").style.display = "none";
   const enemyArea = document.getElementById("enemyArea");
   for(let enemy of cEnemy.content){
-    const pre = random([...enemyPrefixes[0], ...(enemyPrefixes[area.id] ?? [])], );
+    const pre = randomByProb([...enemyPrefixes[0], ...(enemyPrefixes[area.id] ?? [])]);
     enemy.name = `${pre.name} ${enemy.name}`;
     enemy.mods = mergeMods(pre.mods);
     enemy.stats = enemy.mods;
@@ -1465,7 +1465,7 @@ function checkGame() {
       card.style.pointerEvents = "none";
       card.classList.add("dispose");
     }
-    createTreasureBox("Reward", cEnemy.Tier, ...cEnemy.REW);
+    createTreasureBox("Reward", cEnemy.tier, ...cEnemy.REW);
     document.getElementById("drawPile").textContent = drawPile.length;
     update();
     characterUpdate();
@@ -1619,18 +1619,11 @@ function weaponTooltip(weapon, event) {
     mods.addAP && `AP +${mods.addAP}`
   ].filter(Boolean);
 
-  const skillLines = [];
-  for(let skill of weapon[0].skills){
-    skillLines.push(`　${skill.name} <br> 　AP: ${skill.AP} <br> 　${skill.description}`);
-  }
   const lines = [
     nameLines,
     `ATK: ${weapon[0].ATK}`,
     `CRT: ${weapon[0].CRT}% CRD: ${weapon[0].CRD}%`,
     `ACC: ${weapon[0].ACC}`,
-    ...modLines,
-    `<br> Granted Skill`,
-    ...skillLines
   ];
 
   for(let i = 1; i < weapon.length; i++){
@@ -1688,9 +1681,9 @@ function skillTooltip(skill, event){
 }
 
 function randomWeapon(tier) {
-  const newWeapon = random(weapons, tier);
-  const pre = random([...prefixes["common"], ...prefixes["weapon"]], tier);
-  const suf = random([...suffixes["common"], ...suffixes["weapon"]], tier);
+  const newWeapon = randomByTier(weapons, tier);
+  const pre = randomByTier([...prefixes["common"], ...prefixes["weapon"]], tier);
+  const suf = randomByTier([...suffixes["common"], ...suffixes["weapon"]], tier);
   newWeapon.name = `${pre.name} ${newWeapon.name} ${suf.name}`;
   const _newWeapon = modsDist(newWeapon);
   _newWeapon.mods = (modsDist(mergeMods(newWeapon.mods, pre.mods, suf.mods)));
@@ -1699,9 +1692,9 @@ function randomWeapon(tier) {
   
 }
 function randomArmor(tier) {
-  const newArmor = random(armors, tier);
-  const pre = random([...prefixes["common"], ...prefixes["armor"]], tier);
-  const suf = random([...suffixes["common"], ...suffixes["armor"]], tier);
+  const newArmor = randomByTier(armors, tier);
+  const pre = randomByTier([...prefixes["common"], ...prefixes["armor"]], tier);
+  const suf = randomByTier([...suffixes["common"], ...suffixes["armor"]], tier);
   newArmor.name = `${pre.name} ${newArmor.name} ${suf.name}`;
   const _newArmor = modsDist(newArmor);
   _newArmor.mods = (modsDist(mergeMods(newArmor.mods, pre.mods, suf.mods)));
@@ -1720,7 +1713,7 @@ function modsDist(mods){
 }
 
 function randomSkill(tier) {
-  const newSkill = random(skills, tier);
+  const newSkill = randomByTier(skills, tier);
   return(newSkill);
 }
 
@@ -1758,7 +1751,6 @@ function pickUpWeapon(rew, newWeapon, goods) {
   const index = Array.from(goods.parentElement.children).indexOf(goods);
   dropWeapon(rew, cWeapon, index);
   cWeapon = newWeapon;
-  weaponSkills = newWeapon[0].skills;
   drawPile = [...weaponSkills, ...deck];
   log(`You equipped ${cWeapon[0].name}`);
   play(sounds.equip);
@@ -2079,7 +2071,7 @@ function createNPC(name){
     goods.className = "goods";
     const goodsCost = document.createElement("div");
     goodsCost.className = "goodsCost";
-    const glyph = random(glyphs, area.Tier);
+    const glyph = randomByTier(glyphs, area.tier);
     button.classList.add("glyphOnSale");
     button.innerHTML = 
     `<div class="glyphOnSaleTop">Enchant your weapon</div>
@@ -2139,7 +2131,7 @@ function createNPC(name){
     goods.className = "goods";
     const goodsCost = document.createElement("div");
     goodsCost.className = "goodsCost";
-    const skill = random(skills, area.Tier);
+    const skill = randomByTier(skills, area.tier);
     const card = createCard(skill);
     goodsCost.innerHTML = `Coin: ${skill.CST}`;
     card.style.marginRight = "0";

@@ -7,18 +7,31 @@ export function normalDistribution(accuracy){
 	return z1;
 }
 
-export function random(List, tier){
-  const filteredList = tier? List.filter(e => (e.Tier >= tier - 2 && e.Tier <= tier + 2)) : List;
+export function randomByTier(List, tier){
+  const filteredList = tier? List.filter(e => (e.tier >= tier - 2 && e.tier <= tier + 2)) : List;
   let totalWeight = 0;
-  filteredList.forEach(e => totalWeight += getTierWeight(e.Tier, tier));
+  filteredList.forEach(e => totalWeight += getTierWeight(e.tier, tier));
   let r = Math.random() * totalWeight;
   for (let i = 0; i < filteredList.length; i++) {
-    if (r < getTierWeight(filteredList[i].Tier, tier)) {
+    if (r < getTierWeight(filteredList[i].tier, tier)) {
       const s = { ...filteredList[i] };
       return(s)
       break;
     }
-    r -= getTierWeight(filteredList[i].Tier, tier);
+    r -= getTierWeight(filteredList[i].tier, tier);
+  }
+}
+export function randomByProb(List){
+  let totalWeight = 0;
+  List.forEach(e => totalWeight += e.PROB);
+  let r = Math.floor(Math.random() * totalWeight);
+  for (let i = 0; i < List.length; i++) {
+    if (r < List[i].PROB) {
+      const s = { ...List[i] };
+      return(s)
+      break;
+    }
+    r -= List[i].PROB;
   }
 }
 function getTierWeight(itemTier, currentTier){

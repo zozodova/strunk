@@ -1,6 +1,6 @@
 export const monsters = {
   1: [{
-    Tier: 1,
+    tier: 1,
     content:[{
       name: "Slime",
       HP: 300,
@@ -19,7 +19,7 @@ export const monsters = {
     REW: [10, 30, 0, 1, 5]
   },
   {
-    Tier: 1,
+    tier: 1,
     content:[{
       name: "Rat",
       HP: 100,
@@ -54,7 +54,7 @@ export const monsters = {
     REW: [10, 30, 0, 1, 5]
   },
   {
-    Tier: 1,
+    tier: 1,
     content:[{
       name: "Goblin",
       HP: 200,
@@ -74,7 +74,7 @@ export const monsters = {
     REW: [10, 30, 0, 1, 5]
   },
   {
-    Tier: 2,
+    tier: 2,
     content:[{
       name: "Wolf",
       HP: 300,
@@ -94,7 +94,7 @@ export const monsters = {
     REW: [20, 30, 0, 2, 5]
   },
   {
-    Tier: 4,
+    tier: 4,
     content: [{
       name: "Dragon",
       HP: 1500,
@@ -115,7 +115,7 @@ export const monsters = {
     REW: [100, 30, 30, 10, 10]
   },
   {
-    Tier: 1,
+    tier: 1,
     content: [{
       name: "Snake",
       HP: 180,
@@ -138,7 +138,7 @@ export const monsters = {
   },
   ],
   2: [{
-    Tier: 2,
+    tier: 2,
     content: [{
       name: "Sand Slime",
       HP: 500,
@@ -158,7 +158,7 @@ export const monsters = {
     REW: [30, 30, 0, 2, 5]
   },
   {
-    Tier: 2,
+    tier: 2,
     content: [{
       name: "Mummy",
       HP: 500,
@@ -180,7 +180,7 @@ export const monsters = {
     REW: [30, 30, 0, 2, 5]
   },
   {
-    Tier: 2,
+    tier: 2,
     content: [{
       name: "Vulture",
       HP: 100,
@@ -201,7 +201,7 @@ export const monsters = {
     REW: [30, 30, 0, 2, 5]
   },
   {
-    Tier: 3,
+    tier: 3,
     content: [{
       name: "Scorpion",
       HP: 400,
@@ -226,7 +226,7 @@ export const monsters = {
     REW: [50, 30, 10, 2, 5]
   },
   {
-    Tier: 3,
+    tier: 3,
     content: [{
       name: "Scarab",
       HP: 200,
@@ -262,7 +262,7 @@ export const monsters = {
     REW: [50, 30, 10, 2, 7]
   },
   {
-    Tier: 4,
+    tier: 4,
     content: [{
       name: "Golem",
       HP: 1000,

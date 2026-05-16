@@ -1,6 +1,6 @@
 export const skills = [
   {
-    Tier: 1,
+    tier: 1,
     name: "Attack",
     description: "deal 100% weapon damage.",
     effects:[
@@ -11,7 +11,7 @@ export const skills = [
     CST: 50,
   },
   {
-    Tier: 2,
+    tier: 2,
     name: "Heavy Attack",
     description: "deal 200% weapon damage.",
     effects:[
@@ -21,7 +21,7 @@ export const skills = [
     CST: 100
   },
   {
-    Tier: 5,
+    tier: 5,
     name: "Massive Attack",
     description: "deal 300% weapon damage.",
     effects:[
@@ -31,7 +31,7 @@ export const skills = [
     CST: 400
   },
   {
-    Tier: 9,
+    tier: 9,
     name: "Catastrophe",
     description: "deal 400% weapon damage.",
     effects:[
@@ -42,7 +42,7 @@ export const skills = [
   },
 
   {
-    Tier: 1,
+    tier: 1,
     name: "Block",
     description: "gain 100% armor block.",
     effects:[
@@ -52,7 +52,7 @@ export const skills = [
     CST: 50,
   },
   {
-    Tier: 3,
+    tier: 3,
     name: "Solid Block",
     description: "gain 200% armor block.",
     effects:[
@@ -62,7 +62,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 7,
+    tier: 7,
     name: "Absolute Block",
     description: "gain 300% armor block.",
     effects:[
@@ -73,7 +73,7 @@ export const skills = [
   },
 
   {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"block", mag: 60},
     {type:"buff", name: "Mana", value:1, TRN: 2}
@@ -85,7 +85,7 @@ export const skills = [
   },
   
   {
-    Tier: 2,
+    tier: 2,
     effects:[
     {type:"attack", mag: 60, CHN: 2,},
     ],
@@ -95,7 +95,7 @@ export const skills = [
     CST: 100,
   },
   {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"draw", value: 2},
     ],
@@ -105,7 +105,7 @@ export const skills = [
     CST: 100,
   },
   {
-    Tier: 2,
+    tier: 2,
     effects:[
     {type:"attack", mag: 80},
     {type:"debuff", name: "Vulnerable",value: 30, TRN: 3}
@@ -116,7 +116,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"buff", name: "FocusCharge",value: 100, TRN: Infinity}
     ],
@@ -127,7 +127,7 @@ export const skills = [
   },
 
   {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"buff", name: "Ignite",value: 50, TRN: 1}
     ],
@@ -137,7 +137,7 @@ export const skills = [
     CST: 100,
   },
   {
-    Tier: 2,
+    tier: 2,
     effects:[
     {type:"buff", name: "FlameImbue",value: 50, TRN: 2}
     ],
@@ -147,7 +147,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"buff", name: "Glaciate",value: 50, TRN: 1}
     ],
@@ -157,7 +157,7 @@ export const skills = [
     CST: 100,
   },
   {
-    Tier: 2,
+    tier: 2,
     effects:[
     {type:"buff", name: "FrostImbue",value: 50, TRN: 2}
     ],
@@ -167,7 +167,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"buff", name: "Overload",value: 50, TRN: 1}
     ],
@@ -177,7 +177,7 @@ export const skills = [
     CST: 100,
   },
   {
-    Tier: 2,
+    tier: 2,
     effects:[
     {type:"buff", name: "StormImbue",value: 50, TRN: 2}
     ],
@@ -187,7 +187,7 @@ export const skills = [
     CST: 200,
   },
    {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"buff", name: "Corrode",value: 50, TRN: 1}
     ],
@@ -197,7 +197,7 @@ export const skills = [
     CST: 100,
   },
   {
-    Tier: 2,
+    tier: 2,
     effects:[
     {type:"buff", name: "PoisonImbue",value: 50, TRN: 2}
     ],
@@ -207,7 +207,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 3,
+    tier: 3,
     name: "Bulwark Attack",
     description: "Deal 70% weapon damage. \n Gain 60% armor block.",
     effects:[
@@ -218,7 +218,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 3,
+    tier: 3,
     name: "Glint",
     description: "Deal 20% weapon damage.",
     effects:[
@@ -228,7 +228,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 4,
+    tier: 4,
     name: "Iron Stance",
     description: "ATK, DEF + 30%. \n 2 Turn",
     effects:[
@@ -239,7 +239,7 @@ export const skills = [
     CST: 200,
   },
   {
-    Tier: 1,
+    tier: 1,
     name: "Ruin",
     description: "Deal 70% weapon damage to all enemies.",
     effects:[
@@ -250,7 +250,7 @@ export const skills = [
   },
 
   {
-    Tier: 3,
+    tier: 3,
     effects:[
     {type:"debuff", name: "Burn",value: 100, TRN: 1}
     ],
@@ -261,12 +261,13 @@ export const skills = [
   },
 
   {
-    Tier: 1,
+    tier: 1,
     effects: [
       {type: "buff", name: "Strength", value:20, TRN: 2}
     ],
     name: "Strength",
     description: "ATK +20%",
+    AP: 1,
     CST: 100,
   },
 ];
